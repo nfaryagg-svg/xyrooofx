@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOVA API · WhatsApp MD Multi Device</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07070b;
+  --panel:#0e0e16;
+  --panel-2:#13131e;
+  --border:#1f1f2c;
+  --cyan:#37e6ff;
+  --purple:#a855f7;
+  --pink:#ff4fd8;
+  --text:#f3f3f7;
+  --muted:#8d8da3;
+  --green:#3cf2a0;
+  --orange:#ffb454;
+  --red:#ff5c7a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::before{
+  content:"";
+  position:fixed; inset:0;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(55,230,255,.12), transparent 45%),
+    radial-gradient(circle at 90% 20%, rgba(168,85,247,.14), transparent 45%),
+    radial-gradient(circle at 50% 100%, rgba(255,79,216,.08), transparent 50%);
+  pointer-events:none; z-index:0;
+}
+.h1,.h2,.h3,.logo,.brand{font-family:'Space Grotesk',sans-serif}
+code,.mono,.path,.kbd{font-family:'JetBrains Mono',monospace}
+
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#23233655;border-radius:8px}
+
+/* ===== TOPBAR ===== */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 28px;
+  background:rgba(7,7,11,.78);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:.3px}
+.brand .dot{
+  width:11px;height:11px;border-radius:50%;
+  background:var(--cyan);
+  box-shadow:0 0 8px var(--cyan), 0 0 22px var(--cyan);
+  animation:pulse 2.2s infinite ease-in-out;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.nav-links{display:flex;gap:26px;font-size:14px;color:var(--muted)}
+.nav-links a:hover{color:var(--text)}
+.topbar-actions{display:flex;gap:10px}
+
+.btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 18px; border-radius:11px;
+  font-size:13.5px; font-weight:600; font-family:'Inter',sans-serif;
+  border:1px solid var(--border);
+  background:var(--panel-2);
+  color:var(--text);
+  cursor:pointer;
+  transition:.18s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn:hover{transform:translateY(-1px); border-color:#3a3a52; background:#171723}
+.btn:active{transform:translateY(0) scale(.98)}
+.btn-primary{
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  color:#04040a; border:none;
+  box-shadow:0 0 0 1px rgba(255,255,255,.08) inset, 0 6px 24px -8px rgba(55,230,255,.45);
+}
+.btn-primary:hover{box-shadow:0 0 0 1px rgba(255,255,255,.12) inset, 0 8px 28px -6px rgba(168,85,247,.55)}
+.btn-ghost{background:transparent}
+.btn-sm{padding:7px 12px;font-size:12px;border-radius:8px}
+
+/* ===== HAMBURGER 3 GARIS ===== */
+.hamburger{
+  display:flex; flex-direction:column; justify-content:center; gap:5px;
+  width:38px; height:34px; padding:0; border-radius:9px;
+  background:var(--panel-2); border:1px solid var(--border); cursor:pointer;
+  transition:.18s ease;
+}
+.hamburger:hover{border-color:var(--cyan); box-shadow:0 0 12px -2px rgba(55,230,255,.5)}
+.hamburger span{
+  display:block; height:2px; width:18px; margin:0 auto; border-radius:2px;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));
+  transition:.25s ease;
+}
+.hamburger.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.active span:nth-child(2){opacity:0}
+.hamburger.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+.sidebar-overlay{
+  position:fixed; inset:0; background:rgba(4,4,8,.6); backdrop-filter:blur(2px);
+  z-index:59; opacity:0; pointer-events:none; transition:opacity .25s ease;
+}
+.sidebar-overlay.show{opacity:1; pointer-events:auto}
+
+/* ===== HERO ===== */
+.hero{
+  position:relative; z-index:1;
+  padding:64px 28px 40px;
+  display:grid; grid-template-columns:1.1fr .9fr; gap:40px;
+  max-width:1320px; margin:0 auto;
+}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:12px; color:var(--cyan); letter-spacing:1.5px; text-transform:uppercase;
+  border:1px solid rgba(55,230,255,.3); padding:6px 12px; border-radius:30px;
+  background:rgba(55,230,255,.06);
+  margin-bottom:18px;
+}
+.hero h1{
+  font-size:48px; line-height:1.08; font-weight:700; letter-spacing:-1px;
+  margin-bottom:18px;
+}
+.hero h1 span{
+  background:linear-gradient(90deg,var(--cyan),var(--purple) 60%, var(--pink));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.hero p{color:var(--muted); font-size:15.5px; line-height:1.7; max-width:560px; margin-bottom:28px}
+.hero-actions{display:flex; gap:12px; flex-wrap:wrap}
+.hero-stats{display:flex; gap:28px; margin-top:34px; flex-wrap:wrap}
+.stat b{font-size:24px; font-family:'Space Grotesk'}
+.stat span{display:block; font-size:12px; color:var(--muted); margin-top:2px}
+
+.hero-panel{
+  background:linear-gradient(180deg,var(--panel),var(--panel-2));
+  border:1px solid var(--border); border-radius:20px;
+  padding:18px; position:relative; overflow:hidden;
+  box-shadow:0 0 0 1px rgba(255,255,255,.02) inset, 0 30px 60px -30px rgba(55,230,255,.15);
+}
+.terminal-head{display:flex; align-items:center; gap:8px; padding:4px 6px 14px; border-bottom:1px solid var(--border); margin-bottom:14px}
+.tdot{width:10px;height:10px;border-radius:50%}
+.terminal-body{font-size:12.8px; line-height:1.85; color:#c9c9e0}
+.terminal-body .c1{color:var(--green)}
+.terminal-body .c2{color:var(--cyan)}
+.terminal-body .c3{color:var(--orange)}
+.terminal-body .muted{color:var(--muted)}
+
+/* ===== LAYOUT DOCS ===== */
+.wrap{display:grid; grid-template-columns:0 1fr; max-width:1320px; margin:0 auto; gap:0; position:relative; z-index:1}
+.sidebar{
+  position:fixed; top:0; left:0; height:100vh; width:280px;
+  padding:20px 16px 60px; overflow-y:auto;
+  background:linear-gradient(180deg,var(--panel),var(--bg));
+  border-right:1px solid var(--border);
+  z-index:60;
+  transform:translateX(-100%);
+  transition:transform .28s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 60px rgba(0,0,0,.6);
+}
+.sidebar.open{transform:translateX(0)}
+.sidebar-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:4px 10px 18px; border-bottom:1px solid var(--border); margin-bottom:16px;
+}
+.sidebar-head .title{font-family:'Space Grotesk'; font-weight:700; font-size:15px}
+.sidebar-close{
+  width:28px;height:28px;border-radius:7px;background:var(--panel-2);border:1px solid var(--border);
+  color:var(--muted); cursor:pointer; font-size:14px;
+}
+.sidebar-close:hover{color:var(--text); border-color:#3a3a52}
+.side-group{margin-bottom:22px}
+.side-title{font-size:11px; text-transform:uppercase; letter-spacing:1.2px; color:var(--muted); margin:0 10px 8px}
+.side-link{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  padding:8px 10px; border-radius:8px; font-size:13.5px; color:#c7c7dc;
+  cursor:pointer;
+}
+.side-link:hover{background:var(--panel-2); color:var(--text)}
+.side-link .count{font-size:10.5px; color:var(--muted); font-family:'JetBrains Mono'}
+
+.content{padding:40px 28px 100px}
+.section-head{margin-bottom:22px}
+.section-head h2{font-size:24px; font-weight:700}
+.section-head p{color:var(--muted); font-size:13.5px; margin-top:6px}
+
+.cat-block{margin-bottom:46px; scroll-margin-top:80px}
+.cat-title{
+  display:flex; align-items:center; gap:10px; font-size:18px; font-weight:700;
+  margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--border);
+}
+.cat-title .icon{
+  width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+  font-size:15px; background:var(--panel-2); border:1px solid var(--border);
+}
+.cat-title .tag{margin-left:auto; font-size:11px; color:var(--muted); font-family:'JetBrains Mono'}
+
+.grid-cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px}
+.card{
+  background:var(--panel); border:1px solid var(--border); border-radius:14px;
+  padding:16px; transition:.18s ease; position:relative; overflow:hidden;
+}
+.card:hover{border-color:#33334a; transform:translateY(-2px); box-shadow:0 16px 32px -20px rgba(55,230,255,.25)}
+.card-top{display:flex; align-items:center; gap:8px; margin-bottom:10px}
+.method{
+  font-size:10.5px; font-weight:700; padding:3px 8px; border-radius:6px; font-family:'JetBrains Mono';
+  letter-spacing:.4px;
+}
+.method.get{color:var(--green); background:rgba(60,242,160,.12); border:1px solid rgba(60,242,160,.3)}
+.method.post{color:var(--cyan); background:rgba(55,230,255,.12); border:1px solid rgba(55,230,255,.3)}
+.path{font-size:12.6px; color:#d8d8ec}
+.card p{font-size:12.6px; color:var(--muted); line-height:1.6; margin-bottom:12px}
+.card-foot{display:flex; align-items:center; justify-content:space-between; gap:8px}
+.badge{font-size:10px; color:var(--muted); font-family:'JetBrains Mono'; border:1px solid var(--border); padding:3px 7px; border-radius:6px}
+
+/* ===== FOOTER ===== */
+footer{
+  border-top:1px solid var(--border); padding:30px 28px; text-align:center; color:var(--muted); font-size:12.5px;
+  position:relative; z-index:1;
+}
+footer a{color:var(--cyan)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr}
+  .hero h1{font-size:34px}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:14px">
+    <button class="hamburger" id="hamburgerBtn" aria-label="Buka semua fitur" onclick="toggleSidebar()">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="brand"><span class="dot"></span> NOVA<span style="color:var(--cyan)">API</span></div>
+  </div>
+  <div class="nav-links">
+    <a href="#hero">Beranda</a>
+    <a href="#docs">Dokumentasi</a>
+    <a href="#plugins">Plugins</a>
+    <a href="#stats">Status</a>
+  </div>
+  <div class="topbar-actions">
+    <a class="btn btn-sm" href="github.html">⭐ View on GitHub</a>
+    <a class="btn btn-primary btn-sm" href="#docs">Get API Key</a>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<section class="hero" id="hero">
+  <div>
+    <div class="eyebrow">● Multi Device · Baileys Engine</div>
+    <h1>API Bot WhatsApp<br><span>MD Multi Device</span> untuk semua kebutuhanmu.</h1>
+    <p>NOVA API adalah REST API siap pakai untuk membangun bot WhatsApp Multi Device — lengkap dengan modul AI, downloader, pencarian, stalking sosial media, leaderboard, hingga maker gambar. Dokumentasi rapi, response JSON konsisten, dan gratis untuk dicoba.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#docs">📄 Lihat Dokumentasi</a>
+      <a class="btn" href="github.html">🐙 Source Code di GitHub</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><b>180+</b><span>Total Endpoint</span></div>
+      <div class="stat"><b>14</b><span>Kategori Fitur</span></div>
+      <div class="stat"><b>99.9%</b><span>Uptime Server</span></div>
+      <div class="stat"><b>24/7</b><span>Auto Reconnect</span></div>
+    </div>
+  </div>
+
+  <div class="hero-panel">
+    <div class="terminal-head">
+      <span class="tdot" style="background:#ff5f56"></span>
+      <span class="tdot" style="background:#ffbd2e"></span>
+      <span class="tdot" style="background:#27c93f"></span>
+      <span style="margin-left:8px;color:var(--muted);font-size:12px">request.sh</span>
+    </div>
+    <div class="terminal-body">
+      <div><span class="c1">$</span> curl <span class="c2">-X GET</span> "https://api.novaapi.my.id/ai/chatgpt" \</div>
+      <div>&nbsp;&nbsp;-H <span class="c3">"apikey: NOVA-XXXX"</span> \</div>
+      <div>&nbsp;&nbsp;--data-urlencode <span class="c3">"text=halo apa kabar"</span></div>
+      <br>
+      <div class="muted">// response</div>
+      <div>{</div>
+      <div>&nbsp;&nbsp;"status": <span class="c1">true</span>,</div>
+      <div>&nbsp;&nbsp;"creator": <span class="c3">"NOVA-API"</span>,</div>
+      <div>&nbsp;&nbsp;"result": <span class="c3">"Halo! Aku baik, ada yang bisa dibantu?"</span></div>
+      <div>}</div>
+      <br>
+      <div><span class="c1">$</span> <span style="opacity:.5">connecting socket multi-device... </span><span class="c1">OK ✓</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap" id="docs">
+  <aside class="sidebar" id="sidebarDrawer">
+    <div class="sidebar-head">
+      <span class="title">📂 Semua Fitur</span>
+      <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+    </div>
+    <div class="side-group">
+      <div class="side-title">Mulai</div>
+      <div class="side-link">Pengenalan</div>
+      <div class="side-link">Autentikasi</div>
+      <div class="side-link">Rate Limit</div>
+    </div>
+    <div class="side-group">
+      <div class="side-title">Kategori Endpoint</div>
+      <div class="side-link" onclick="location.href='#cat-ai'">🤖 AI <span class="count">18</span></div>
+      <div class="side-link" onclick="location.href='#cat-admin'">🛠 Admin <span class="count">12</span></div>
+      <div class="side-link" onclick="location.href='#cat-cache'">📦 Cache <span class="count">5</span></div>
+      <div class="side-link" onclick="location.href='#cat-download'">⬇ Download <span class="count">22</span></div>
+      <div class="side-link" onclick="location.href='#cat-fun'">🎲 Fun <span class="count">16</span></div>
+      <div class="side-link" onclick="location.href='#cat-leaderboard'">🏆 Leaderboard <span class="count">6</span></div>
+      <div class="side-link" onclick="location.href='#cat-library'">📚 Library <span class="count">8</span></div>
+      <div class="side-link" onclick="location.href='#cat-maker'">🎨 Maker <span class="count">14</span></div>
+      <div class="side-link" onclick="location.href='#cat-news'">📰 News <span class="count">9</span></div>
+      <div class="side-link" onclick="location.href='#cat-random'">🎰 Random <span class="count">11</span></div>
+      <div class="side-link" onclick="location.href='#cat-search'">🔍 Search <span class="count">15</span></div>
+      <div class="side-link" onclick="location.href='#cat-stalk'">🕵 Stalk <span class="count">10</span></div>
+      <div class="side-link" onclick="location.href='#cat-tools'">🧰 Tools <span class="count">17</span></div>
+      <div class="side-link" onclick="location.href='#cat-plugins'">🧩 Plugins Lain <span class="count">20+</span></div>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="section-head">
+      <h2>Dokumentasi Endpoint</h2>
+      <p>Semua endpoint memakai method GET/POST dengan parameter <code class="mono">apikey</code>. Response selalu JSON dengan struktur <code class="mono">{status, creator, result}</code>.</p>
+    </div>
+
+    <!-- AI -->
+    <div class="cat-block" id="cat-ai">
+      <div class="cat-title"><span class="icon">🤖</span> AI <span class="tag">/ai/*</span></div>
+      <div class="grid-cards">
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/ai/chatgpt</span></div><p>Chat dengan model AI percakapan umum.</p><div class="card-foot"><span class="badge">text</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/ai/geminiai</span></div><p>Tanya jawab menggunakan model Gemini.</p><div class="card-foot"><span class="badge">text</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/ai/llama</span></div><p>Akses model Llama untuk reasoning panjang.</p><div class="card-foot"><span class="badge">text</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method post">POST</span><span class="path">/ai/image2text</span></div><p>Deskripsikan isi gambar dalam bentuk teks.</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/ai/remini</span></div><p>Tingkatkan kualitas & ketajaman foto otomatis.</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/ai/removebg</span></div><p>Hapus background foto secara instan.</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="cat-block" id="cat-admin">
+      <div class="cat-title"><span class="icon">🛠</span> Admin Group <span class="tag">/admin/*</span></div>
+      <div class="grid-cards">
+        <div class="card"><div class="card-top"><span class="method post">POST</span><span class="path">/admin/kick</span></div><p>Keluarkan anggota dari grup WhatsApp.</p><div class="card-foot"><span class="badge">group</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method post">POST</span><span class="path">/admin/promote</span></div><p>Jadikan anggota sebagai admin grup.</p><div class="card-foot"><span class="badge">group</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method post">POST</span><span class="path">/admin/demote</span></div><p>Turunkan admin jadi anggota biasa.</p><div class="card-foot"><span class="badge">group</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method post">POST</span><span class="path">/admin/antilink</span></div><p>Aktifkan filter anti-link otomatis.</p><div class="card-foot"><span class="badge">setting</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method post">POST</span><span class="path">/admin/broadcast</span></div><p>Kirim pesan ke seluruh anggota grup.</p><div class="card-foot"><span class="badge">message</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/admin/grouplink</span></div><p>Ambil link invite grup saat ini.</p><div class="card-foot"><span class="badge">group</span><button class="btn btn-sm">Try ▸</button></div></div>
+      </div>
+    </div>
+
+    <!-- CACHE -->
+    <div class="cat-block" id="cat-cache">
+      <div class="cat-title"><span class="icon">📦</span> Cache <span class="tag">/cache/*</span></div>
+      <div class="grid-cards">
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/cache/status</span></div><p>Cek status & ukuran cache server saat ini.</p><div class="card-foot"><span class="badge">system</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method post">POST</span><span class="path">/cache/clear</span></div><p>Bersihkan seluruh cache media sementara.</p><div class="card-foot"><span class="badge">system</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/cache/session</span></div><p>Lihat daftar session device aktif.</p><div class="card-foot"><span class="badge">session</span><button class="btn btn-sm">Try ▸</button></div></div>
+      </div>
+    </div>
+
+    <!-- DOWNLOAD -->
+    <div class="cat-block" id="cat-download">
+      <div class="cat-title"><span class="icon">⬇</span> Download <span class="tag">/download/*</span></div>
+      <div class="grid-cards">
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/download/tiktok</span></div><p>Unduh video TikTok tanpa watermark.</p><div class="card-foot"><span class="badge">video</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/download/instagram</span></div><p>Unduh foto/video/reels dari Instagram.</p><div class="card-foot"><span class="badge">media</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/download/youtube/mp3</span></div><p>Konversi video YouTube menjadi audio MP3.</p><div class="card-foot"><span class="badge">audio</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/download/youtube/mp4</span></div><p>Unduh video YouTube kualitas pilihan.</p><div class="card-foot"><span class="badge">video</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/download/facebook</span></div><p>Unduh video dari Facebook tanpa logo.</p><div class="card-foot"><span class="badge">video</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/download/spotify</span></div><p>Unduh lagu dari link Spotify.</p><div class="card-foot"><span class="badge">audio</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/download/pinterest</span></div><p>Unduh gambar resolusi tinggi dari Pinterest.</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/download/mediafire</span></div><p>Ambil link direct download Mediafire.</p><div class="card-foot"><span class="badge">file</span><button class="btn btn-sm">Try ▸</button></div></div>
+      </div>
+    </div>
+
+    <!-- FUN -->
+    <div class="cat-block" id="cat-fun">
+      <div class="cat-title"><span class="icon">🎲</span> Fun <span class="tag">/fun/*</span></div>
+      <div class="grid-cards">
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/fun/quotes</span></div><p>Kutipan acak penuh motivasi harian.</p><div class="card-foot"><span class="badge">text</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/fun/truth</span></div><p>Pertanyaan jujur untuk game Truth or Dare.</p><div class="card-foot"><span class="badge">game</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/fun/dare</span></div><p>Tantangan seru untuk game Truth or Dare.</p><div class="card-foot"><span class="badge">game</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/fun/meme</span></div><p>Meme lucu acak dari berbagai sumber.</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/fun/tebakgambar</span></div><p>Game tebak gambar dengan jawaban tersembunyi.</p><div class="card-foot"><span class="badge">game</span><button class="btn btn-sm">Try ▸</button></div></div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="cat-block" id="cat-leaderboard">
+      <div class="cat-title"><span class="icon">🏆</span> Leaderboard <span class="tag">/leaderboard/*</span></div>
+      <div class="grid-cards">
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/leaderboard/global</span></div><p>Ranking pengguna teraktif di seluruh server.</p><div class="card-foot"><span class="badge">data</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/leaderboard/group</span></div><p>Ranking aktivitas anggota dalam satu grup.</p><div class="card-foot"><span class="badge">data</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/leaderboard/level</span></div><p>Urutan level & XP tertinggi pengguna.</p><div class="card-foot"><span class="badge">data</span><button class="btn btn-sm">Try ▸</button></div></div>
+      </div>
+    </div>
+
+    <!-- LIBRARY -->
+    <div class="cat-block" id="cat-library">
+      <div class="cat-title"><span class="icon">📚</span> Library <span class="tag">/library/*</span></div>
+      <div class="grid-cards">
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/library/sticker</span></div><p>Konversi gambar/video menjadi stiker WA.</p><div class="card-foot"><span class="badge">media</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/library/toaudio</span></div><p>Konversi pesan suara menjadi format audio biasa.</p><div class="card-foot"><span class="badge">media</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/library/translate</span></div><p>Terjemahkan teks ke berbagai bahasa.</p><div class="card-foot"><span class="badge">text</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/library/ocr</span></div><p>Ekstrak teks dari gambar (OCR).</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+      </div>
+    </div>
+
+    <!-- MAKER -->
+    <div class="cat-block" id="cat-maker">
+      <div class="cat-title"><span class="icon">🎨</span> Maker <span class="tag">/maker/*</span></div>
+      <div class="grid-cards">
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/maker/brat</span></div><p>Buat gambar teks bergaya "brat" populer.</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/maker/welcome</span></div><p>Banner welcome otomatis untuk member baru.</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/maker/quotes-image</span></div><p>Ubah teks jadi gambar kutipan estetik.</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/maker/logo</span></div><p>Generator logo teks dengan banyak template.</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/maker/ttp</span></div><p>Text to pict gaya meme bergerak.</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+      </div>
+    </div>
+
+    <!-- NEWS -->
+    <div class="cat-block" id="cat-news">
+      <div class="cat-title"><span class="icon">📰</span> News <span class="tag">/news/*</span></div>
+      <div class="grid-cards">
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/news/terkini</span></div><p>Berita terbaru dari berbagai kategori.</p><div class="card-foot"><span class="badge">data</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/news/sport</span></div><p>Update berita olahraga dalam & luar negeri.</p><div class="card-foot"><span class="badge">data</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/news/teknologi</span></div><p>Berita seputar teknologi dan gadget terbaru.</p><div class="card-foot"><span class="badge">data</span><button class="btn btn-sm">Try ▸</button></div></div>
+      </div>
+    </div>
+
+    <!-- RANDOM -->
+    <div class="cat-block" id="cat-random">
+      <div class="cat-title"><span class="icon">🎰</span> Random <span class="tag">/random/*</span></div>
+      <div class="grid-cards">
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/random/wallpaper</span></div><p>Wallpaper HD acak dari berbagai tema.</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/random/waifu</span></div><p>Gambar anime/waifu acak SFW.</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/random/catfact</span></div><p>Fakta unik tentang kucing secara acak.</p><div class="card-foot"><span class="badge">text</span><button class="btn btn-sm">Try ▸</button></div></div>
+      </div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="cat-block" id="cat-search">
+      <div class="cat-title"><span class="icon">🔍</span> Search <span class="tag">/search/*</span></div>
+      <div class="grid-cards">
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/search/lyrics</span></div><p>Cari lirik lagu berdasarkan judul.</p><div class="card-foot"><span class="badge">text</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/search/google</span></div><p>Pencarian umum menggunakan mesin Google.</p><div class="card-foot"><span class="badge">data</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/search/pinterest</span></div><p>Cari gambar berdasarkan kata kunci di Pinterest.</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/search/anime</span></div><p>Cari informasi detail judul anime.</p><div class="card-foot"><span class="badge">data</span><button class="btn btn-sm">Try ▸</button></div></div>
+      </div>
+    </div>
+
+    <!-- STALK -->
+    <div class="cat-block" id="cat-stalk">
+      <div class="cat-title"><span class="icon">🕵</span> Stalk <span class="tag">/stalk/*</span></div>
+      <div class="grid-cards">
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/stalk/instagram</span></div><p>Lihat info profil publik Instagram.</p><div class="card-foot"><span class="badge">data</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/stalk/tiktok</span></div><p>Lihat info profil publik TikTok.</p><div class="card-foot"><span class="badge">data</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/stalk/github</span></div><p>Lihat statistik & repo publik akun GitHub.</p><div class="card-foot"><span class="badge">data</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/stalk/npm</span></div><p>Cari info paket yang terdaftar di NPM.</p><div class="card-foot"><span class="badge">data</span><button class="btn btn-sm">Try ▸</button></div></div>
+      </div>
+    </div>
+
+    <!-- TOOLS -->
+    <div class="cat-block" id="cat-tools">
+      <div class="cat-title"><span class="icon">🧰</span> Tools <span class="tag">/tools/*</span></div>
+      <div class="grid-cards">
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/tools/shortlink</span></div><p>Persingkat URL panjang jadi tautan pendek.</p><div class="card-foot"><span class="badge">text</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/tools/qrcode</span></div><p>Buat kode QR dari teks atau link.</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/tools/ssweb</span></div><p>Screenshot tampilan halaman website.</p><div class="card-foot"><span class="badge">image</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/tools/base64</span></div><p>Encode / decode teks ke format Base64.</p><div class="card-foot"><span class="badge">text</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/tools/textmaker</span></div><p>Bantu generate teks acak/lorem cepat.</p><div class="card-foot"><span class="badge">text</span><button class="btn btn-sm">Try ▸</button></div></div>
+      </div>
+    </div>
+
+    <!-- PLUGINS LAIN -->
+    <div class="cat-block" id="cat-plugins">
+      <div class="cat-title"><span class="icon">🧩</span> Plugins Tambahan <span class="tag">misc/*</span></div>
+      <div class="grid-cards">
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/group/absensi</span></div><p>Catat & rekap absensi member grup harian.</p><div class="card-foot"><span class="badge">group</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/economy/balance</span></div><p>Cek saldo koin ekonomi virtual pengguna.</p><div class="card-foot"><span class="badge">data</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/owner/restart</span></div><p>Restart koneksi bot multi device.</p><div class="card-foot"><span class="badge">system</span><button class="btn btn-sm">Try ▸</button></div></div>
+        <div class="card"><div class="card-top"><span class="method get">GET</span><span class="path">/converter/jadwalsholat</span></div><p>Jadwal sholat berdasarkan kota.</p><div class="card-foot"><span class="badge">data</span><button class="btn btn-sm">Try ▸</button></div></div>
+      </div>
+    </div>
+
+    <div id="stats" class="cat-block">
+      <div class="cat-title"><span class="icon">📊</span> Status Server</div>
+      <div class="grid-cards">
+        <div class="card"><div class="card-top"><span class="badge" style="color:var(--green);border-color:rgba(60,242,160,.3)">● ONLINE</span></div><p style="color:var(--text);font-weight:600">Server Utama (Singapore)</p></div>
+        <div class="card"><div class="card-top"><span class="badge" style="color:var(--green);border-color:rgba(60,242,160,.3)">● ONLINE</span></div><p style="color:var(--text);font-weight:600">Socket Multi Device</p></div>
+        <div class="card"><div class="card-top"><span class="badge" style="color:var(--orange);border-color:rgba(255,180,84,.3)">● MAINTENANCE</span></div><p style="color:var(--text);font-weight:600">Database Leaderboard</p></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<footer>
+  © 2026 NOVA API — Dibangun untuk komunitas developer bot WhatsApp Indonesia ·
+  <a href="github.html">Lihat repo di GitHub →</a>
+</footer>
+
+<script>
+function toggleSidebar(){
+  document.getElementById('sidebarDrawer').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+  document.getElementById('hamburgerBtn').classList.toggle('active');
+}
+document.querySelectorAll('.side-link').forEach(link=>{
+  link.addEventListener('click', toggleSidebar);
+});
+</script>
+</body>
+</html>
