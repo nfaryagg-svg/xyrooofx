@@ -448,6 +448,40 @@
       border-color:#a855f7; color:#fff;
       box-shadow:0 0 20px rgba(168,85,247,0.25);
     }
+
+    /* ── PAGE 2 - SEMUA FITUR ── */
+    .page2{position:relative;z-index:1;padding:60px 20px 80px;}
+    .page2-header{text-align:center;margin-bottom:40px;}
+    .page2-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.4);border-radius:999px;padding:6px 16px;font-size:12px;font-weight:700;color:#c084fc;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;box-shadow:0 0 20px rgba(168,85,247,0.15);}
+    .page2-title{font-size:30px;font-weight:900;line-height:1.2;background:linear-gradient(135deg,#fff 0%,#e9d5ff 50%,#a855f7 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;filter:drop-shadow(0 0 20px rgba(168,85,247,0.3));}
+    .page2-sub{font-size:14px;color:#6b4fa0;}
+    .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(168,85,247,0.5),rgba(192,132,252,0.5),rgba(168,85,247,0.5),transparent);margin:0 20px 48px;position:relative;z-index:1;box-shadow:0 0 8px rgba(168,85,247,0.3);}
+    .stats-row{display:flex;gap:10px;justify-content:center;margin-bottom:40px;flex-wrap:wrap;}
+    .stat-card{flex:1;min-width:70px;max-width:90px;background:rgba(19,13,42,0.8);border:1px solid rgba(168,85,247,0.25);border-radius:14px;padding:14px 8px;text-align:center;transition:all 0.3s;animation:stat-glow 4s ease-in-out infinite;}
+    .stat-card:nth-child(2){animation-delay:-1.3s;}.stat-card:nth-child(3){animation-delay:-2.6s;}.stat-card:nth-child(4){animation-delay:-3.9s;}
+    @keyframes stat-glow{0%,100%{box-shadow:0 4px 20px rgba(124,58,237,0.15);border-color:rgba(168,85,247,0.25);}50%{box-shadow:0 4px 30px rgba(168,85,247,0.4);border-color:rgba(168,85,247,0.55);}}
+    .stat-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(168,85,247,0.4);}
+    .stat-num{font-size:22px;font-weight:900;background:linear-gradient(135deg,#c084fc,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 8px rgba(168,85,247,0.6));}
+    .stat-label{font-size:9px;color:#6b4fa0;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-top:4px;}
+    .cat-section{margin-bottom:32px;}
+    .cat-title{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:800;color:#c084fc;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;padding:0 2px;}
+    .cat-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(168,85,247,0.4),transparent);}
+    .cat-icon{width:26px;height:26px;background:linear-gradient(135deg,rgba(124,58,237,0.3),rgba(168,85,247,0.2));border:1px solid rgba(168,85,247,0.4);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 0 10px rgba(168,85,247,0.2);}
+    .ep-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+    .ep-card{background:rgba(19,13,42,0.7);border:1px solid rgba(59,42,110,0.6);border-radius:12px;padding:11px;transition:all 0.3s;cursor:pointer;position:relative;overflow:hidden;}
+    .ep-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(168,85,247,0.06),transparent);opacity:0;transition:opacity 0.3s;}
+    .ep-card:hover::before{opacity:1;}
+    .ep-card:hover{border-color:rgba(168,85,247,0.55);box-shadow:0 0 18px rgba(168,85,247,0.25);transform:translateY(-2px);}
+    .ep-method{display:inline-block;font-size:9px;font-weight:800;letter-spacing:0.5px;padding:2px 7px;border-radius:4px;margin-bottom:5px;}
+    .ep-method.get{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.3);}
+    .ep-method.post{background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);}
+    .ep-method.free{background:rgba(168,85,247,0.15);color:#c084fc;border:1px solid rgba(168,85,247,0.3);}
+    .ep-name{font-size:12px;font-weight:700;color:#e2e8f0;display:block;margin-bottom:3px;}
+    .ep-desc{font-size:10px;color:#6b7280;line-height:1.4;}
+    .btn-see-all{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(168,85,247,0.15));border:1px solid rgba(168,85,247,0.4);color:#c084fc;padding:14px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;margin-top:20px;transition:all 0.3s;position:relative;overflow:hidden;}
+    .btn-see-all::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(168,85,247,0.2),transparent);animation:sweep 3s linear infinite;}
+    @keyframes sweep{0%{left:-100%;}100%{left:200%;}}
+    .btn-see-all:hover{background:linear-gradient(135deg,rgba(124,58,237,0.4),rgba(168,85,247,0.3));box-shadow:0 0 30px rgba(168,85,247,0.4);color:#fff;}
   </style>
 </head>
 <body>
@@ -599,5 +633,127 @@
       container.appendChild(p);
     }
   </script>
+
+  <!-- DIVIDER -->
+  <div class="divider"></div>
+
+  <!-- PAGE 2: SEMUA FITUR -->
+  <section class="page2">
+    <div class="page2-header">
+      <div class="page2-tag">✦ Semua Fitur</div>
+      <div class="page2-title">800+ Real API Endpoints</div>
+      <div class="page2-sub">Jelajahi seluruh koleksi endpoint Xyrooo FX</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num">800+</div>
+        <div class="stat-label">Endpoint</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">99.9%</div>
+        <div class="stat-label">Uptime</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">12+</div>
+        <div class="stat-label">Kategori</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">Free</div>
+        <div class="stat-label">Akses</div>
+      </div>
+    </div>
+
+    <!-- AI -->
+    <div class="cat-section">
+      <div class="cat-title"><span class="cat-icon">🤖</span> AI & Chat</div>
+      <div class="ep-grid">
+        <div class="ep-card"><span class="ep-method post">POST</span><span class="ep-name">GPT-4 Chat</span><div class="ep-desc">AI chat powered by GPT-4</div></div>
+        <div class="ep-card"><span class="ep-method post">POST</span><span class="ep-name">Gemini Pro</span><div class="ep-desc">Google Gemini AI chat</div></div>
+        <div class="ep-card"><span class="ep-method post">POST</span><span class="ep-name">Claude AI</span><div class="ep-desc">Anthropic Claude chat</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">AI Image Gen</span><div class="ep-desc">Generate gambar dari teks</div></div>
+        <div class="ep-card"><span class="ep-method free">FREE</span><span class="ep-name">Text to Speech</span><div class="ep-desc">Konversi teks ke suara</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Translate AI</span><div class="ep-desc">Terjemahan berbasis AI</div></div>
+      </div>
+    </div>
+
+    <!-- Downloader -->
+    <div class="cat-section">
+      <div class="cat-title"><span class="cat-icon">⬇️</span> Downloader</div>
+      <div class="ep-grid">
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">TikTok DL</span><div class="ep-desc">Download video TikTok no watermark</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">YouTube DL</span><div class="ep-desc">Download video & audio YouTube</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Instagram DL</span><div class="ep-desc">Download foto & reel Instagram</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Facebook DL</span><div class="ep-desc">Download video Facebook</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Twitter DL</span><div class="ep-desc">Download video Twitter/X</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Spotify DL</span><div class="ep-desc">Download lagu Spotify</div></div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="cat-section">
+      <div class="cat-title"><span class="cat-icon">🔍</span> Search</div>
+      <div class="ep-grid">
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Google Search</span><div class="ep-desc">Web search via Google</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Image Search</span><div class="ep-desc">Cari gambar dari web</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">News Search</span><div class="ep-desc">Berita terkini real-time</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">YouTube Search</span><div class="ep-desc">Cari video YouTube</div></div>
+      </div>
+    </div>
+
+    <!-- Tools -->
+    <div class="cat-section">
+      <div class="cat-title"><span class="cat-icon">🛠️</span> Tools</div>
+      <div class="ep-grid">
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">QR Generator</span><div class="ep-desc">Buat QR code custom</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Short URL</span><div class="ep-desc">Perpendek URL panjang</div></div>
+        <div class="ep-card"><span class="ep-method post">POST</span><span class="ep-name">OCR Text</span><div class="ep-desc">Baca teks dari gambar</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Cuaca / Weather</span><div class="ep-desc">Info cuaca real-time</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">IP Lookup</span><div class="ep-desc">Info detail alamat IP</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Password Gen</span><div class="ep-desc">Generator password aman</div></div>
+      </div>
+    </div>
+
+    <!-- Fun -->
+    <div class="cat-section">
+      <div class="cat-title"><span class="cat-icon">🎮</span> Fun & Hiburan</div>
+      <div class="ep-grid">
+        <div class="ep-card"><span class="ep-method free">FREE</span><span class="ep-name">Meme Generator</span><div class="ep-desc">Buat meme lucu otomatis</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Kata Motivasi</span><div class="ep-desc">Quote harian inspiratif</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Joke API</span><div class="ep-desc">Lelucon random setiap hari</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Anime Info</span><div class="ep-desc">Info lengkap anime terbaru</div></div>
+      </div>
+    </div>
+
+    <!-- Music -->
+    <div class="cat-section">
+      <div class="cat-title"><span class="cat-icon">🎵</span> Music</div>
+      <div class="ep-grid">
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Lyrics Search</span><div class="ep-desc">Cari lirik lagu apapun</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Music Info</span><div class="ep-desc">Detail track & artist</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Trending Music</span><div class="ep-desc">Lagu trending saat ini</div></div>
+        <div class="ep-card"><span class="ep-method post">POST</span><span class="ep-name">Music Recognition</span><div class="ep-desc">Kenali lagu dari audio</div></div>
+      </div>
+    </div>
+
+    <!-- Image -->
+    <div class="cat-section">
+      <div class="cat-title"><span class="cat-icon">📷</span> Image Processing</div>
+      <div class="ep-grid">
+        <div class="ep-card"><span class="ep-method post">POST</span><span class="ep-name">Remove BG</span><div class="ep-desc">Hapus background foto</div></div>
+        <div class="ep-card"><span class="ep-method post">POST</span><span class="ep-name">Image Resize</span><div class="ep-desc">Ubah ukuran gambar</div></div>
+        <div class="ep-card"><span class="ep-method post">POST</span><span class="ep-name">Face Detect</span><div class="ep-desc">Deteksi wajah di foto</div></div>
+        <div class="ep-card"><span class="ep-method get">GET</span><span class="ep-name">Random Image</span><div class="ep-desc">Foto random HD berkualitas</div></div>
+      </div>
+    </div>
+
+    <!-- Tombol lihat semua -->
+    <a class="btn-see-all" href="#">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      Lihat Semua 800+ Endpoint di GitHub
+    </a>
+  </section>
+
 </body>
 </html>
