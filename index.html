@@ -1,2066 +1,603 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Xyrooo FX Rest API Premium</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg-deep: #0d0a1a;
-    --bg-card: #13102a;
-    --bg-surface: #1a1535;
-    --purple-100: #f3e8ff;
-    --purple-300: #c084fc;
-    --purple-400: #a855f7;
-    --purple-500: #9333ea;
-    --purple-600: #7c3aed;
-    --purple-700: #6d28d9;
-    --purple-glow: rgba(147,51,234,0.35);
-    --purple-glow-soft: rgba(147,51,234,0.15);
-    --text-primary: #f1eaff;
-    --text-secondary: #a78bca;
-    --text-muted: #6b5a8e;
-    --border: rgba(147,51,234,0.2);
-    --border-bright: rgba(147,51,234,0.5);
-    --success: #22c55e;
-    --error: #ef4444;
-    --warning: #f59e0b;
-    --info: #38bdf8;
-    --font-display: 'Space Grotesk', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg-deep);
-    color: var(--text-primary);
-    font-family: var(--font-display);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* ANIMATED BACKGROUND */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 10% 10%, rgba(109,40,217,0.18) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 80% at 90% 80%, rgba(147,51,234,0.12) 0%, transparent 60%),
-      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(88,28,199,0.08) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* GRID OVERLAY */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(147,51,234,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(147,51,234,0.04) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .wrap { position: relative; z-index: 1; }
-
-  /* ───── NAVBAR ───── */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 32px;
-    height: 64px;
-    background: rgba(13,10,26,0.85);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .nav-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-  }
-
-  /* ROBOT LOGO SVG */
-  .robot-logo {
-    width: 38px;
-    height: 38px;
-    filter: drop-shadow(0 0 8px var(--purple-400));
-  }
-
-  .brand-text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.1;
-  }
-
-  .brand-name {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text-primary);
-    letter-spacing: 0.02em;
-  }
-
-  .brand-tag {
-    font-size: 10px;
-    font-weight: 500;
-    color: var(--purple-400);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    font-family: var(--font-mono);
-  }
-
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .nav-link {
-    padding: 6px 14px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    text-decoration: none;
-    border-radius: 6px;
-    transition: all 0.2s;
-    cursor: pointer;
-    border: none;
-    background: none;
-  }
-
-  .nav-link:hover, .nav-link.active {
-    color: var(--text-primary);
-    background: var(--purple-glow-soft);
-  }
-
-  .nav-link.active {
-    color: var(--purple-300);
-  }
-
-  .nav-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .btn-github {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 7px 16px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    text-decoration: none;
-    transition: all 0.2s;
-    cursor: pointer;
-  }
-
-  .btn-github:hover {
-    color: var(--text-primary);
-    border-color: var(--border-bright);
-    background: rgba(255,255,255,0.07);
-  }
-
-  .btn-primary {
-    padding: 7px 18px;
-    font-size: 13px;
-    font-weight: 600;
-    color: white;
-    background: linear-gradient(135deg, var(--purple-600), var(--purple-400));
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 20px var(--purple-glow);
-  }
-
-  /* ───── PAGES ───── */
-  .page { display: none; padding-top: 64px; min-height: 100vh; }
-  .page.active { display: block; }
-
-  /* ───── HOME PAGE ───── */
-  .hero {
-    text-align: center;
-    padding: 90px 24px 60px;
-    max-width: 860px;
-    margin: 0 auto;
-  }
-
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 14px;
-    background: var(--purple-glow-soft);
-    border: 1px solid var(--border-bright);
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--purple-300);
-    font-family: var(--font-mono);
-    margin-bottom: 28px;
-    letter-spacing: 0.05em;
-  }
-
-  .pulse-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--success);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
-    50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(34,197,94,0); }
-  }
-
-  .hero-title {
-    font-size: clamp(36px, 6vw, 64px);
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    margin-bottom: 20px;
-  }
-
-  .hero-title .grad {
-    background: linear-gradient(135deg, #e879f9, #a855f7, #7c3aed);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .hero-sub {
-    font-size: 17px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    max-width: 560px;
-    margin: 0 auto 40px;
-  }
-
-  .hero-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 60px;
-  }
-
-  .btn-lg {
-    padding: 13px 28px;
-    font-size: 15px;
-    font-weight: 600;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    border: none;
-    font-family: var(--font-display);
-  }
-
-  .btn-lg-primary {
-    color: white;
-    background: linear-gradient(135deg, var(--purple-600), var(--purple-400));
-    box-shadow: 0 0 30px var(--purple-glow);
-  }
-
-  .btn-lg-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 40px var(--purple-glow);
-  }
-
-  .btn-lg-outline {
-    color: var(--text-primary);
-    background: transparent;
-    border: 1px solid var(--border-bright);
-  }
-
-  .btn-lg-outline:hover {
-    background: var(--purple-glow-soft);
-    border-color: var(--purple-400);
-  }
-
-  /* STATS */
-  .stats-bar {
-    display: flex;
-    justify-content: center;
-    gap: 0;
-    max-width: 700px;
-    margin: 0 auto;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-  }
-
-  .stat-item {
-    flex: 1;
-    padding: 22px 16px;
-    text-align: center;
-    border-right: 1px solid var(--border);
-  }
-
-  .stat-item:last-child { border-right: none; }
-
-  .stat-num {
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--purple-300);
-    font-family: var(--font-mono);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-
-  .stat-label {
-    font-size: 11px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  /* SERVER STATUS */
-  .status-section {
-    max-width: 900px;
-    margin: 60px auto;
-    padding: 0 24px;
-  }
-
-  .section-title {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 6px;
-  }
-
-  .section-sub {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-bottom: 24px;
-    font-family: var(--font-mono);
-  }
-
-  .status-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 14px;
-  }
-
-  .status-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    transition: border-color 0.2s;
-  }
-
-  .status-card:hover { border-color: var(--border-bright); }
-
-  .status-left { display: flex; align-items: center; gap: 12px; }
-
-  .status-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background: var(--purple-glow-soft);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-  }
-
-  .status-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-
-  .status-uptime {
-    font-size: 11px;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-    margin-top: 2px;
-  }
-
-  .status-badge {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-family: var(--font-mono);
-  }
-
-  .badge-online { background: rgba(34,197,94,0.15); color: var(--success); }
-  .badge-offline { background: rgba(239,68,68,0.15); color: var(--error); }
-  .badge-degraded { background: rgba(245,158,11,0.15); color: var(--warning); }
-
-  /* FEATURES GRID */
-  .features-section {
-    max-width: 1100px;
-    margin: 0 auto 80px;
-    padding: 0 24px;
-  }
-
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 12px;
-  }
-
-  .feature-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-  }
-
-  .feature-card:hover {
-    border-color: var(--purple-400);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 30px var(--purple-glow-soft);
-    background: var(--bg-surface);
-  }
-
-  .fc-icon {
-    font-size: 24px;
-    margin-bottom: 10px;
-    display: block;
-  }
-
-  .fc-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 4px;
-  }
-
-  .fc-count {
-    font-size: 11px;
-    color: var(--purple-400);
-    font-family: var(--font-mono);
-  }
-
-  .fc-desc {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 6px;
-    line-height: 1.5;
-  }
-
-  /* ───── DOCS PAGE ───── */
-  .docs-layout {
-    display: flex;
-    min-height: calc(100vh - 64px);
-  }
-
-  .docs-sidebar {
-    width: 260px;
-    flex-shrink: 0;
-    background: var(--bg-card);
-    border-right: 1px solid var(--border);
-    padding: 24px 0;
-    position: sticky;
-    top: 64px;
-    height: calc(100vh - 64px);
-    overflow-y: auto;
-  }
-
-  .sidebar-group {
-    margin-bottom: 8px;
-  }
-
-  .sidebar-group-title {
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    padding: 8px 20px 6px;
-  }
-
-  .sidebar-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 20px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.15s;
-    border-left: 2px solid transparent;
-    text-decoration: none;
-  }
-
-  .sidebar-item:hover { color: var(--text-primary); background: var(--purple-glow-soft); }
-  .sidebar-item.active { color: var(--purple-300); border-left-color: var(--purple-400); background: var(--purple-glow-soft); }
-
-  .sidebar-item .method-tag {
-    font-size: 9px;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: var(--font-mono);
-    margin-left: auto;
-  }
-
-  .get-tag { background: rgba(34,197,94,0.2); color: var(--success); }
-  .post-tag { background: rgba(59,130,246,0.2); color: #60a5fa; }
-
-  .docs-content {
-    flex: 1;
-    padding: 40px 48px;
-    max-width: 900px;
-  }
-
-  .endpoint-block {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    margin-bottom: 28px;
-    overflow: hidden;
-  }
-
-  .endpoint-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 18px 22px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg-surface);
-  }
-
-  .method-badge {
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-family: var(--font-mono);
-    letter-spacing: 0.05em;
-  }
-
-  .method-get { background: rgba(34,197,94,0.15); color: var(--success); }
-  .method-post { background: rgba(59,130,246,0.15); color: #60a5fa; }
-
-  .endpoint-path {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    color: var(--text-primary);
-    font-weight: 500;
-    flex: 1;
-  }
-
-  .endpoint-copy {
-    padding: 5px 10px;
-    background: var(--purple-glow-soft);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text-secondary);
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: var(--font-display);
-  }
-
-  .endpoint-copy:hover { color: var(--purple-300); border-color: var(--border-bright); }
-
-  .endpoint-body { padding: 22px; }
-
-  .endpoint-desc {
-    font-size: 14px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin-bottom: 20px;
-  }
-
-  .params-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-    font-size: 13px;
-  }
-
-  .params-table th {
-    text-align: left;
-    padding: 8px 12px;
-    color: var(--text-muted);
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .params-table td {
-    padding: 10px 12px;
-    color: var(--text-secondary);
-    border-bottom: 1px solid rgba(147,51,234,0.08);
-    vertical-align: top;
-  }
-
-  .params-table td:first-child {
-    font-family: var(--font-mono);
-    color: var(--purple-300);
-    font-size: 12px;
-  }
-
-  .required-tag {
-    font-size: 10px;
-    padding: 2px 6px;
-    background: rgba(239,68,68,0.15);
-    color: var(--error);
-    border-radius: 4px;
-    font-family: var(--font-mono);
-    margin-left: 6px;
-  }
-
-  .optional-tag {
-    font-size: 10px;
-    padding: 2px 6px;
-    background: rgba(107,91,142,0.2);
-    color: var(--text-muted);
-    border-radius: 4px;
-    font-family: var(--font-mono);
-    margin-left: 6px;
-  }
-
-  .code-block {
-    background: #0a0816;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px 20px;
-    font-family: var(--font-mono);
-    font-size: 13px;
-    line-height: 1.65;
-    overflow-x: auto;
-    position: relative;
-  }
-
-  .code-label {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .code-label span {
-    background: var(--bg-surface);
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 10px;
-  }
-
-  .json-key { color: #c084fc; }
-  .json-str { color: #86efac; }
-  .json-num { color: #f9a8d4; }
-  .json-bool { color: #67e8f9; }
-  .json-null { color: #fca5a5; }
-
-  .try-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 18px;
-    background: linear-gradient(135deg, var(--purple-600), var(--purple-400));
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: var(--font-display);
-    margin-top: 12px;
-  }
-
-  .try-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 20px var(--purple-glow);
-  }
-
-  /* RESPONSE PREVIEW */
-  .response-preview {
-    margin-top: 16px;
-    display: none;
-  }
-
-  .response-preview.visible { display: block; }
-
-  .response-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    font-size: 12px;
-    font-family: var(--font-mono);
-  }
-
-  .res-200 { color: var(--success); }
-  .res-400 { color: var(--error); }
-
-  /* ───── DASHBOARD PAGE ───── */
-  .dashboard {
-    padding: 40px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .dash-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 36px;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-
-  .dash-title {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-
-  .dash-sub {
-    font-size: 14px;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-  }
-
-  .dash-actions { display: flex; gap: 10px; }
-
-  /* KPI CARDS */
-  .kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-    gap: 16px;
-    margin-bottom: 28px;
-  }
-
-  .kpi-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 22px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.2s;
-  }
-
-  .kpi-card:hover { border-color: var(--border-bright); }
-
-  .kpi-card::after {
-    content: '';
-    position: absolute;
-    bottom: -20px; right: -20px;
-    width: 80px; height: 80px;
-    background: var(--purple-glow-soft);
-    border-radius: 50%;
-    filter: blur(20px);
-  }
-
-  .kpi-label {
-    font-size: 11px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 10px;
-    font-weight: 600;
-  }
-
-  .kpi-value {
-    font-size: 30px;
-    font-weight: 700;
-    font-family: var(--font-mono);
-    color: var(--text-primary);
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-
-  .kpi-change {
-    font-size: 12px;
-    font-family: var(--font-mono);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .kpi-up { color: var(--success); }
-  .kpi-down { color: var(--error); }
-
-  .kpi-icon {
-    position: absolute;
-    top: 18px; right: 18px;
-    font-size: 22px;
-    opacity: 0.6;
-  }
-
-  /* CHARTS */
-  .dash-grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-
-  @media (max-width: 768px) {
-    .dash-grid-2 { grid-template-columns: 1fr; }
-    .docs-layout { flex-direction: column; }
-    .docs-sidebar { width: 100%; position: static; height: auto; }
-    .docs-content { padding: 24px 20px; }
-    nav { padding: 0 16px; }
-    .nav-links { display: none; }
-    .dashboard { padding: 24px 16px; }
-  }
-
-  .chart-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 22px;
-  }
-
-  .chart-title {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-
-  .chart-sub {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-bottom: 20px;
-    font-family: var(--font-mono);
-  }
-
-  /* Fake chart bars */
-  .bar-chart {
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    height: 140px;
-  }
-
-  .bar-col {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    height: 100%;
-    justify-content: flex-end;
-  }
-
-  .bar {
-    width: 100%;
-    border-radius: 5px 5px 0 0;
-    background: linear-gradient(180deg, var(--purple-400), var(--purple-700));
-    transition: height 0.4s ease;
-    min-height: 4px;
-    position: relative;
-  }
-
-  .bar:hover { filter: brightness(1.2); }
-
-  .bar-label {
-    font-size: 10px;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-  }
-
-  /* Line chart fake */
-  .line-chart {
-    height: 140px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .line-chart svg { width: 100%; height: 100%; }
-
-  /* Recent requests table */
-  .table-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    margin-bottom: 24px;
-  }
-
-  .table-head {
-    padding: 18px 22px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .table-title { font-size: 15px; font-weight: 600; }
-
-  table.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-
-  .data-table th {
-    text-align: left;
-    padding: 10px 22px;
-    color: var(--text-muted);
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg-surface);
-  }
-
-  .data-table td {
-    padding: 12px 22px;
-    border-bottom: 1px solid rgba(147,51,234,0.07);
-    color: var(--text-secondary);
-    vertical-align: middle;
-  }
-
-  .data-table tr:last-child td { border-bottom: none; }
-  .data-table tr:hover td { background: rgba(147,51,234,0.04); }
-
-  .endpoint-pill {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--purple-300);
-  }
-
-  .status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 9px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-family: var(--font-mono);
-    font-weight: 600;
-  }
-
-  /* ENDPOINT USAGE BARS */
-  .usage-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-
-  @media (max-width: 900px) { .usage-section { grid-template-columns: 1fr; } }
-
-  .usage-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 14px;
-  }
-
-  .usage-name {
-    font-size: 12px;
-    font-family: var(--font-mono);
-    color: var(--text-secondary);
-    min-width: 120px;
-  }
-
-  .usage-bar-track {
-    flex: 1;
-    height: 6px;
-    background: rgba(147,51,234,0.12);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-
-  .usage-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--purple-600), var(--purple-300));
-    border-radius: 3px;
-    transition: width 1s ease;
-  }
-
-  .usage-pct {
-    font-size: 11px;
-    font-family: var(--font-mono);
-    color: var(--purple-300);
-    min-width: 36px;
-    text-align: right;
-  }
-
-  /* API KEY SECTION */
-  .key-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 24px;
-    margin-bottom: 24px;
-  }
-
-  .key-display {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #0a0816;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 16px;
-    margin: 16px 0;
-  }
-
-  .key-value {
-    font-family: var(--font-mono);
-    font-size: 13px;
-    color: var(--purple-300);
-    flex: 1;
-    letter-spacing: 0.05em;
-  }
-
-  .key-toggle {
-    padding: 5px 10px;
-    background: var(--purple-glow-soft);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text-muted);
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: var(--font-display);
-  }
-
-  .key-toggle:hover { color: var(--text-primary); border-color: var(--border-bright); }
-
-  /* TIER BADGES */
-  .tier-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 14px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  .tier-premium {
-    background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(236,72,153,0.2));
-    color: #e879f9;
-    border: 1px solid rgba(168,85,247,0.4);
-  }
-
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-bright);
-    border-radius: 10px;
-    padding: 14px 20px;
-    font-size: 13px;
-    color: var(--text-primary);
-    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 999;
-    transform: translateX(120%);
-    transition: transform 0.3s ease;
-  }
-
-  .toast.show { transform: translateX(0); }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: var(--bg-deep); }
-  ::-webkit-scrollbar-thumb { background: var(--purple-700); border-radius: 3px; }
-
-  /* FOOTER */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 30px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .footer-left {
-    font-size: 13px;
-    color: var(--text-muted);
-  }
-
-  .footer-links {
-    display: flex;
-    gap: 20px;
-  }
-
-  .footer-link {
-    font-size: 13px;
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-
-  .footer-link:hover { color: var(--purple-300); }
-
-  /* CATEGORY TAG */
-  .cat-tag {
-    display: inline-block;
-    padding: 3px 8px;
-    background: var(--purple-glow-soft);
-    border: 1px solid var(--border);
-    color: var(--purple-300);
-    border-radius: 5px;
-    font-size: 11px;
-    font-family: var(--font-mono);
-    margin-right: 6px;
-    margin-bottom: 4px;
-  }
-</style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Xyrooo FX - REST API Premium</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    /* ── BODY + AURORA BACKGROUND ── */
+    body {
+      background: #07040f;
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Aurora blobs */
+    .aurora {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .aurora-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.25;
+      animation: aurora-drift 8s ease-in-out infinite alternate;
+    }
+    .aurora-blob:nth-child(1) {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #7c3aed, transparent 70%);
+      top: -100px; left: -80px;
+      animation-duration: 9s;
+    }
+    .aurora-blob:nth-child(2) {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #a855f7, transparent 70%);
+      top: 40%; right: -60px;
+      animation-duration: 11s; animation-delay: -3s;
+    }
+    .aurora-blob:nth-child(3) {
+      width: 250px; height: 250px;
+      background: radial-gradient(circle, #6d28d9, transparent 70%);
+      bottom: 0; left: 30%;
+      animation-duration: 13s; animation-delay: -6s;
+    }
+    @keyframes aurora-drift {
+      0%   { transform: translate(0,0) scale(1); }
+      100% { transform: translate(30px,20px) scale(1.1); }
+    }
+
+    /* Floating particles */
+    .particles { position:fixed; inset:0; z-index:0; pointer-events:none; }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: #a855f7;
+      opacity: 0;
+      animation: float-particle linear infinite;
+    }
+    @keyframes float-particle {
+      0%   { opacity:0; transform: translateY(0) scale(0); }
+      10%  { opacity:0.6; }
+      90%  { opacity:0.3; }
+      100% { opacity:0; transform: translateY(-120vh) scale(1); }
+    }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      background: rgba(19,13,42,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(168,85,247,0.25);
+      padding: 0 16px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 30px rgba(124,58,237,0.2);
+    }
+    /* shimmer line top of navbar */
+    .navbar::before {
+      content:'';
+      position:absolute;
+      top:0; left:0; right:0;
+      height:1px;
+      background: linear-gradient(90deg, transparent, #a855f7, #c084fc, #a855f7, transparent);
+      background-size: 200% 100%;
+      animation: shimmer-line 3s linear infinite;
+    }
+    @keyframes shimmer-line {
+      0%   { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    /* Hamburger */
+    .hamburger {
+      display:flex; flex-direction:column; justify-content:center;
+      gap:5px; cursor:pointer; padding:4px; flex-shrink:0;
+    }
+    .hamburger span {
+      display:block; width:26px; height:2.5px;
+      background: #c084fc; border-radius:2px;
+      transition: all 0.3s;
+      box-shadow: 0 0 6px rgba(192,132,252,0.6);
+    }
+    .hamburger:hover span {
+      background:#fff;
+      box-shadow: 0 0 10px rgba(168,85,247,1);
+    }
+
+    /* Brand */
+    .brand { display:flex; align-items:center; gap:10px; flex:1; }
+    .brand-icon {
+      width:38px; height:38px;
+      background: linear-gradient(135deg,#7c3aed,#a855f7);
+      border-radius:10px;
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0;
+      box-shadow: 0 0 14px rgba(168,85,247,0.6), 0 0 30px rgba(124,58,237,0.3);
+      animation: icon-glow 3s ease-in-out infinite;
+    }
+    @keyframes icon-glow {
+      0%,100% { box-shadow: 0 0 14px rgba(168,85,247,0.6), 0 0 30px rgba(124,58,237,0.3); }
+      50%      { box-shadow: 0 0 22px rgba(192,132,252,0.9), 0 0 50px rgba(168,85,247,0.5); }
+    }
+    .brand-text { display:flex; flex-direction:column; line-height:1.2; }
+    .brand-name {
+      font-size:14px; font-weight:700; color:#fff; letter-spacing:0.3px;
+      text-shadow: 0 0 10px rgba(168,85,247,0.5);
+    }
+    .brand-sub {
+      font-size:9.5px; font-weight:600; color:#a855f7;
+      letter-spacing:1px; text-transform:uppercase;
+    }
+
+    /* Button GitHub */
+    .btn-github {
+      display:flex; align-items:center; gap:6px;
+      background: transparent;
+      border: 1.5px solid rgba(168,85,247,0.4);
+      color:#c4b5fd; padding:7px 14px; border-radius:8px;
+      font-size:13px; font-weight:500; cursor:pointer;
+      text-decoration:none; white-space:nowrap;
+      transition: all 0.3s;
+      position:relative; overflow:hidden;
+    }
+    .btn-github::before {
+      content:'';
+      position:absolute; top:0; left:-100%; width:100%; height:100%;
+      background: linear-gradient(90deg, transparent, rgba(168,85,247,0.2), transparent);
+      transition: left 0.5s;
+    }
+    .btn-github:hover::before { left:100%; }
+    .btn-github:hover {
+      border-color:#a855f7; color:#fff;
+      box-shadow: 0 0 16px rgba(168,85,247,0.4);
+    }
+
+    /* Button Dashboard */
+    .btn-dashboard {
+      display:flex; align-items:center; gap:6px;
+      background: linear-gradient(135deg,#7c3aed,#a855f7);
+      color:#fff; padding:8px 16px; border-radius:10px;
+      font-size:13px; font-weight:700; cursor:pointer;
+      text-decoration:none; border:none; white-space:nowrap;
+      box-shadow: 0 4px 14px rgba(168,85,247,0.5), 0 0 30px rgba(124,58,237,0.3);
+      transition: all 0.3s;
+      animation: btn-pulse 3s ease-in-out infinite;
+    }
+    @keyframes btn-pulse {
+      0%,100% { box-shadow: 0 4px 14px rgba(168,85,247,0.5), 0 0 30px rgba(124,58,237,0.3); }
+      50%      { box-shadow: 0 4px 24px rgba(192,132,252,0.8), 0 0 50px rgba(168,85,247,0.5); }
+    }
+    .btn-dashboard:hover { transform:scale(1.04); }
+
+    /* ── SIDEBAR ── */
+    .overlay {
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      z-index:200; opacity:0; pointer-events:none; transition:opacity 0.25s;
+    }
+    .overlay.open { opacity:1; pointer-events:auto; }
+
+    .sidebar {
+      position:fixed; top:0; left:0;
+      width:270px; height:100%;
+      background: rgba(13,9,26,0.97);
+      border-right: 1px solid rgba(168,85,247,0.3);
+      z-index:300;
+      transform:translateX(-100%);
+      transition:transform 0.28s cubic-bezier(.4,0,.2,1);
+      display:flex; flex-direction:column;
+      box-shadow: 4px 0 40px rgba(124,58,237,0.3);
+    }
+    .sidebar.open { transform:translateX(0); }
+
+    .sidebar-header {
+      padding:18px 16px 14px;
+      border-bottom:1px solid rgba(168,85,247,0.2);
+      display:flex; align-items:center; gap:10px;
+      background: linear-gradient(135deg, rgba(124,58,237,0.15), transparent);
+    }
+    .sidebar-close {
+      margin-left:auto; background:none; border:none;
+      color:#a855f7; font-size:20px; cursor:pointer; line-height:1;
+      transition: all 0.2s;
+    }
+    .sidebar-close:hover { color:#fff; text-shadow:0 0 10px #a855f7; }
+
+    .sidebar-nav { padding:12px 0; flex:1; overflow-y:auto; }
+    .nav-label {
+      font-size:10px; font-weight:700; color:#6b4fa0;
+      letter-spacing:1.2px; text-transform:uppercase;
+      padding:10px 18px 4px;
+    }
+    .nav-item {
+      display:flex; align-items:center; gap:11px;
+      padding:11px 18px; color:#c4b5fd;
+      font-size:14px; font-weight:500; cursor:pointer;
+      text-decoration:none; transition: all 0.2s;
+    }
+    .nav-item:hover {
+      background: rgba(168,85,247,0.1); color:#fff;
+      text-shadow: 0 0 8px rgba(168,85,247,0.5);
+    }
+    .nav-item.active {
+      background:rgba(168,85,247,0.12); color:#fff;
+      border-left:3px solid #a855f7;
+      box-shadow: inset 0 0 20px rgba(168,85,247,0.05);
+    }
+    .nav-icon { font-size:16px; width:20px; text-align:center; }
+
+    /* ── HERO ── */
+    .hero {
+      text-align:center;
+      padding:60px 24px 50px;
+      position:relative; z-index:1;
+    }
+
+    /* Status badge */
+    .status-badge {
+      display:inline-flex; align-items:center; gap:7px;
+      background: rgba(26,15,53,0.8);
+      border:1px solid rgba(168,85,247,0.4);
+      border-radius:999px; padding:6px 14px;
+      font-size:12px; font-family:monospace; color:#c4b5fd;
+      margin-bottom:32px;
+      box-shadow: 0 0 20px rgba(168,85,247,0.15);
+      animation: badge-shimmer 4s ease-in-out infinite;
+    }
+    @keyframes badge-shimmer {
+      0%,100% { box-shadow: 0 0 20px rgba(168,85,247,0.15); }
+      50%      { box-shadow: 0 0 30px rgba(168,85,247,0.35); }
+    }
+    .status-dot {
+      width:8px; height:8px; background:#22c55e; border-radius:50%;
+      box-shadow: 0 0 8px #22c55e, 0 0 16px rgba(34,197,94,0.4);
+      animation: dot-blink 1.5s ease-in-out infinite;
+    }
+    @keyframes dot-blink {
+      0%,100% { opacity:1; box-shadow: 0 0 8px #22c55e, 0 0 16px rgba(34,197,94,0.4); }
+      50%      { opacity:0.6; box-shadow: 0 0 4px #22c55e; }
+    }
+
+    /* ── GITHUB LOGO CARD ── */
+    .github-logo-hero {
+      display:inline-flex; flex-direction:column; align-items:center; gap:14px;
+      background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(168,85,247,0.08));
+      border: 1px solid rgba(168,85,247,0.45);
+      border-radius:28px; padding:32px 48px;
+      margin-bottom:32px;
+      position:relative; overflow:hidden;
+      box-shadow:
+        0 0 0 1px rgba(168,85,247,0.1),
+        0 8px 40px rgba(124,58,237,0.25),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    /* rotating conic light sweep */
+    .github-logo-hero::before {
+      content:'';
+      position:absolute; inset:-50%;
+      background: conic-gradient(from 0deg, transparent 0deg, rgba(168,85,247,0.15) 60deg, transparent 120deg);
+      animation: conic-spin 6s linear infinite;
+      pointer-events:none;
+    }
+    @keyframes conic-spin { to { transform: rotate(360deg); } }
+    /* radial glow behind logo */
+    .github-logo-hero::after {
+      content:'';
+      position:absolute; top:10px; left:50%;
+      transform:translateX(-50%);
+      width:140px; height:140px;
+      background: radial-gradient(circle, rgba(168,85,247,0.4) 0%, transparent 70%);
+      pointer-events:none;
+      animation: glow-breathe 3s ease-in-out infinite;
+    }
+    @keyframes glow-breathe {
+      0%,100% { opacity:0.6; transform:translateX(-50%) scale(1); }
+      50%      { opacity:1;   transform:translateX(-50%) scale(1.2); }
+    }
+    /* GitHub SVG icon */
+    .github-logo-hero svg {
+      width:80px; height:80px;
+      position:relative; z-index:2;
+      filter:
+        drop-shadow(0 0 8px rgba(255,255,255,0.9))
+        drop-shadow(0 0 16px rgba(192,132,252,1))
+        drop-shadow(0 0 35px rgba(168,85,247,0.9))
+        drop-shadow(0 0 60px rgba(124,58,237,0.7));
+      animation: logo-glow 3s ease-in-out infinite;
+    }
+    @keyframes logo-glow {
+      0%,100% {
+        filter:
+          drop-shadow(0 0 8px rgba(255,255,255,0.9))
+          drop-shadow(0 0 16px rgba(192,132,252,1))
+          drop-shadow(0 0 35px rgba(168,85,247,0.9))
+          drop-shadow(0 0 60px rgba(124,58,237,0.7));
+      }
+      50% {
+        filter:
+          drop-shadow(0 0 14px rgba(255,255,255,1))
+          drop-shadow(0 0 28px rgba(216,180,254,1))
+          drop-shadow(0 0 55px rgba(192,132,252,1))
+          drop-shadow(0 0 90px rgba(168,85,247,0.9));
+      }
+    }
+    /* label teks utama */
+    .github-logo-label {
+      position:relative; z-index:2;
+      font-size:20px; font-weight:900; letter-spacing:0.5px;
+      background: linear-gradient(135deg, #ffffff 0%, #e9d5ff 40%, #c084fc 70%, #a855f7 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text;
+      text-shadow: none;
+      filter: drop-shadow(0 0 8px rgba(168,85,247,0.6));
+      animation: text-shimmer 4s ease-in-out infinite;
+      background-size: 200% auto;
+    }
+    @keyframes text-shimmer {
+      0%   { background-position: 0% center; }
+      50%  { background-position: 100% center; }
+      100% { background-position: 0% center; }
+    }
+    .github-logo-sublabel {
+      position:relative; z-index:2;
+      font-size:11px; font-weight:700;
+      color:#9b76d4; letter-spacing:2.5px; text-transform:uppercase;
+      margin-top:-6px;
+      text-shadow: 0 0 10px rgba(168,85,247,0.5);
+    }
+
+    /* ── HERO H1 ── */
+    .hero h1 {
+      font-size:40px; font-weight:900; line-height:1.15; margin-bottom:20px;
+      background: linear-gradient(135deg, #fff 0%, #e9d5ff 50%, #a855f7 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text;
+      filter: drop-shadow(0 0 20px rgba(168,85,247,0.4));
+      background-size: 200% auto;
+      animation: text-shimmer 5s ease-in-out infinite;
+    }
+    .hero h1 .purple { color:#a855f7; -webkit-text-fill-color:#a855f7; }
+
+    /* ── HERO P ── */
+    .hero p {
+      font-size:15px; color:#9ca3af; line-height:1.7;
+      max-width:420px; margin:0 auto 36px;
+    }
+
+    /* ── FEATURE CHIPS ── */
+    .feature-chips {
+      display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
+      margin-bottom:32px; max-width:400px; margin-left:auto; margin-right:auto;
+    }
+    .chip {
+      background: rgba(26,15,53,0.8);
+      border:1px solid rgba(59,42,110,0.8);
+      color:#c4b5fd; font-size:12px; font-weight:500;
+      padding:5px 12px; border-radius:999px; white-space:nowrap;
+      transition: all 0.3s;
+    }
+    .chip:hover {
+      border-color:#a855f7; color:#fff;
+      box-shadow:0 0 12px rgba(168,85,247,0.4);
+      transform: translateY(-1px);
+    }
+    .chip.highlight {
+      background: rgba(168,85,247,0.12);
+      border-color:rgba(168,85,247,0.5); color:#e9d5ff;
+      box-shadow:0 0 10px rgba(168,85,247,0.15);
+      animation: chip-glow 3s ease-in-out infinite alternate;
+    }
+    @keyframes chip-glow {
+      0%   { box-shadow:0 0 8px rgba(168,85,247,0.15); }
+      100% { box-shadow:0 0 18px rgba(168,85,247,0.4); }
+    }
+
+    /* ── HERO BUTTONS ── */
+    .hero-btns { display:flex; flex-direction:column; gap:12px; max-width:320px; margin:0 auto; }
+    .btn-primary {
+      background: linear-gradient(135deg,#7c3aed,#a855f7,#c084fc);
+      background-size:200% auto;
+      color:#fff; padding:15px; border-radius:12px;
+      font-size:15px; font-weight:700; border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      text-decoration:none;
+      box-shadow: 0 4px 20px rgba(168,85,247,0.5), 0 0 40px rgba(124,58,237,0.3);
+      animation: btn-primary-glow 3s ease-in-out infinite, btn-gradient 4s linear infinite;
+      transition: transform 0.2s;
+    }
+    @keyframes btn-primary-glow {
+      0%,100% { box-shadow: 0 4px 20px rgba(168,85,247,0.5), 0 0 40px rgba(124,58,237,0.3); }
+      50%      { box-shadow: 0 4px 30px rgba(192,132,252,0.8), 0 0 60px rgba(168,85,247,0.5); }
+    }
+    @keyframes btn-gradient {
+      0%   { background-position:0% center; }
+      100% { background-position:200% center; }
+    }
+    .btn-primary:hover { transform:scale(1.03); }
+
+    .btn-secondary {
+      background:transparent; color:#c4b5fd; padding:14px; border-radius:12px;
+      font-size:15px; font-weight:600;
+      border:1.5px solid rgba(59,42,110,0.8);
+      cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+      text-decoration:none; transition:all 0.3s; position:relative; overflow:hidden;
+    }
+    .btn-secondary::before {
+      content:'';
+      position:absolute; top:0; left:-100%; width:100%; height:100%;
+      background:linear-gradient(90deg,transparent,rgba(168,85,247,0.15),transparent);
+      transition:left 0.5s;
+    }
+    .btn-secondary:hover::before { left:100%; }
+    .btn-secondary:hover {
+      border-color:#a855f7; color:#fff;
+      box-shadow:0 0 20px rgba(168,85,247,0.25);
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
 
-<!-- ───── NAVBAR ───── -->
-<nav>
-  <a class="nav-brand" href="#" onclick="showPage('home')">
-    <!-- Robot Logo SVG -->
-    <svg class="robot-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Antenna -->
-      <line x1="24" y1="4" x2="24" y2="10" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round"/>
-      <circle cx="24" cy="3.5" r="2" fill="#c084fc"/>
-      <!-- Head -->
-      <rect x="8" y="10" width="32" height="22" rx="6" fill="url(#robotHead)"/>
-      <!-- Eyes -->
-      <rect x="13" y="17" width="7" height="6" rx="2" fill="#0d0a1a"/>
-      <rect x="28" y="17" width="7" height="6" rx="2" fill="#0d0a1a"/>
-      <rect x="14.5" y="18.5" width="4" height="3" rx="1.5" fill="#a855f7"/>
-      <rect x="29.5" y="18.5" width="4" height="3" rx="1.5" fill="#a855f7"/>
-      <!-- Eye glow -->
-      <ellipse cx="16.5" cy="20" rx="2" ry="1.5" fill="#e879f9" opacity="0.6"/>
-      <ellipse cx="31.5" cy="20" rx="2" ry="1.5" fill="#e879f9" opacity="0.6"/>
-      <!-- Mouth -->
-      <rect x="16" y="27" width="16" height="3" rx="1.5" fill="#1a1535"/>
-      <rect x="17" y="27.5" width="2.5" height="2" rx="1" fill="#a855f7"/>
-      <rect x="21" y="27.5" width="2.5" height="2" rx="1" fill="#a855f7"/>
-      <rect x="25" y="27.5" width="2.5" height="2" rx="1" fill="#a855f7"/>
-      <rect x="29" y="27.5" width="2.5" height="2" rx="1" fill="#a855f7"/>
-      <!-- Ears -->
-      <rect x="4" y="15" width="4" height="8" rx="2" fill="#6d28d9"/>
-      <rect x="40" y="15" width="4" height="8" rx="2" fill="#6d28d9"/>
-      <!-- Body -->
-      <rect x="12" y="33" width="24" height="12" rx="4" fill="url(#robotBody)"/>
-      <!-- Body details -->
-      <circle cx="19" cy="39" r="2.5" fill="#1a1535"/>
-      <circle cx="24" cy="39" r="2.5" fill="#1a1535"/>
-      <circle cx="29" cy="39" r="2.5" fill="#1a1535"/>
-      <circle cx="19" cy="39" r="1.5" fill="#7c3aed"/>
-      <circle cx="24" cy="39" r="1.5" fill="#a855f7"/>
-      <circle cx="29" cy="39" r="1.5" fill="#c084fc"/>
-      <!-- Arms -->
-      <rect x="3" y="33" width="8" height="5" rx="2.5" fill="#6d28d9"/>
-      <rect x="37" y="33" width="8" height="5" rx="2.5" fill="#6d28d9"/>
-      <defs>
-        <linearGradient id="robotHead" x1="8" y1="10" x2="40" y2="32" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#4c1d95"/>
-          <stop offset="1" stop-color="#1e1040"/>
-        </linearGradient>
-        <linearGradient id="robotBody" x1="12" y1="33" x2="36" y2="45" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#5b21b6"/>
-          <stop offset="1" stop-color="#1e1040"/>
-        </linearGradient>
-      </defs>
-    </svg>
-    <div class="brand-text">
-      <span class="brand-name">Xyrooo FX</span>
-      <span class="brand-tag">Rest API Premium</span>
-    </div>
-  </a>
-
-  <div class="nav-links">
-    <button class="nav-link active" onclick="showPage('home')">Home</button>
-    <button class="nav-link" onclick="showPage('docs')">Documentation</button>
-    <button class="nav-link" onclick="showPage('dashboard')">Dashboard</button>
+  <!-- AURORA BACKGROUND -->
+  <div class="aurora">
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
   </div>
 
-  <div class="nav-right">
-    <a class="btn-github" href="#" onclick="showPage('dashboard')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.341-3.369-1.341-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.742 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/></svg>
+  <!-- PARTICLES -->
+  <div class="particles" id="particles"></div>
+
+  <!-- OVERLAY -->
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">Xyrooo FX</span>
+        <span class="brand-sub">Rest Api Premium</span>
+      </div>
+      <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Menu</div>
+      <a class="nav-item active" href="#"><span class="nav-icon">🏠</span> Beranda</a>
+      <a class="nav-item" href="#"><span class="nav-icon">📊</span> Dashboard</a>
+      <a class="nav-item" href="#"><span class="nav-icon">📄</span> Dokumentasi</a>
+      <a class="nav-item" href="#"><span class="nav-icon">🔑</span> API Key</a>
+      <div class="nav-label">Lainnya</div>
+      <a class="nav-item" href="#"><span class="nav-icon">⭐</span> GitHub</a>
+      <a class="nav-item" href="#"><span class="nav-icon">💬</span> Komunitas</a>
+      <a class="nav-item" href="#"><span class="nav-icon">⚙️</span> Pengaturan</a>
+    </nav>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="hamburger" onclick="openSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">Xyrooo FX</span>
+        <span class="brand-sub">Rest Api Premium</span>
+      </div>
+    </div>
+    <a class="btn-github" href="#">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+      </svg>
       GitHub
     </a>
-    <button class="btn-primary" onclick="showPage('docs')">Get API Key</button>
-  </div>
-</nav>
+    <a class="btn-dashboard" href="#">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+      </svg>
+      Dashboard
+    </a>
+  </nav>
 
-<!-- ───── HOME PAGE ───── -->
-<div id="page-home" class="page active">
-
-  <div class="hero">
-    <div class="hero-badge">
-      <span class="pulse-dot"></span>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="status-badge">
+      <span class="status-dot"></span>
       All Systems Operational · v3.8.1
     </div>
-    <h1 class="hero-title">
-      The <span class="grad">Most Powerful</span><br>
-      REST API Platform
-    </h1>
-    <p class="hero-sub">
-      Xyrooo FX delivers 200+ premium endpoints — AI, downloader, search, tools, fun, and more — built for speed, reliability, and zero-friction integration.
-    </p>
-    <div class="hero-actions">
-      <button class="btn-lg btn-lg-primary" onclick="showPage('docs')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        View Documentation
-      </button>
-      <a class="btn-lg btn-lg-outline" href="#">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.341-3.369-1.341-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.742 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/></svg>
+
+    <!-- GitHub Logo Card -->
+    <div class="github-logo-hero">
+      <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+      </svg>
+      <span class="github-logo-label">Xyrooo FX Rest Api</span>
+      <span class="github-logo-sublabel">800+ Real Endpoints</span>
+    </div>
+
+    <h1><span>Xyrooo FX</span><br>Rest Api</h1>
+
+    <p>Xyrooo FX delivers <strong style="color:#c084fc;">800+ real API</strong> endpoints — AI, downloader, search, tools, fun, dan lebih — dibangun untuk kecepatan, keandalan, dan integrasi tanpa hambatan.</p>
+
+    <div class="feature-chips">
+      <span class="chip highlight">🤖 AI</span>
+      <span class="chip highlight">⬇️ Downloader</span>
+      <span class="chip highlight">🔍 Search</span>
+      <span class="chip">🛠️ Tools</span>
+      <span class="chip">🎮 Fun</span>
+      <span class="chip">🎵 Music</span>
+      <span class="chip">📷 Image</span>
+      <span class="chip">🌐 Web</span>
+      <span class="chip">📊 Data</span>
+      <span class="chip">💬 Chat</span>
+      <span class="chip">🔐 Auth</span>
+      <span class="chip">+ Banyak Lagi</span>
+    </div>
+
+    <div class="hero-btns">
+      <a class="btn-primary" href="#">📄 View Documentation</a>
+      <a class="btn-secondary" href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
         View on GitHub
       </a>
     </div>
-    <div class="stats-bar">
-      <div class="stat-item">
-        <div class="stat-num">200+</div>
-        <div class="stat-label">Endpoints</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">99.9%</div>
-        <div class="stat-label">Uptime</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">48ms</div>
-        <div class="stat-label">Avg. Response</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">1M+</div>
-        <div class="stat-label">Requests/Day</div>
-      </div>
-    </div>
-  </div>
+  </section>
 
-  <!-- SERVER STATUS -->
-  <div class="status-section">
-    <div class="section-title">Server Status</div>
-    <div class="section-sub">// real-time infrastructure health</div>
-    <div class="status-grid">
-      <div class="status-card">
-        <div class="status-left">
-          <div class="status-icon">⚡</div>
-          <div>
-            <div class="status-name">API Gateway</div>
-            <div class="status-uptime">Uptime 99.98% · 12ms</div>
-          </div>
-        </div>
-        <div class="status-badge badge-online"><span class="pulse-dot"></span>Online</div>
-      </div>
-      <div class="status-card">
-        <div class="status-left">
-          <div class="status-icon">🧠</div>
-          <div>
-            <div class="status-name">AI Engine</div>
-            <div class="status-uptime">Uptime 99.95% · 230ms</div>
-          </div>
-        </div>
-        <div class="status-badge badge-online"><span class="pulse-dot"></span>Online</div>
-      </div>
-      <div class="status-card">
-        <div class="status-left">
-          <div class="status-icon">📦</div>
-          <div>
-            <div class="status-name">Cache Layer</div>
-            <div class="status-uptime">Uptime 100% · 2ms</div>
-          </div>
-        </div>
-        <div class="status-badge badge-online"><span class="pulse-dot"></span>Online</div>
-      </div>
-      <div class="status-card">
-        <div class="status-left">
-          <div class="status-icon">⬇️</div>
-          <div>
-            <div class="status-name">Downloader CDN</div>
-            <div class="status-uptime">Uptime 99.87% · 340ms</div>
-          </div>
-        </div>
-        <div class="status-badge badge-online"><span class="pulse-dot"></span>Online</div>
-      </div>
-      <div class="status-card">
-        <div class="status-left">
-          <div class="status-icon">🔍</div>
-          <div>
-            <div class="status-name">Search Engine</div>
-            <div class="status-uptime">Uptime 99.91% · 67ms</div>
-          </div>
-        </div>
-        <div class="status-badge badge-online"><span class="pulse-dot"></span>Online</div>
-      </div>
-      <div class="status-card">
-        <div class="status-left">
-          <div class="status-icon">🗄️</div>
-          <div>
-            <div class="status-name">Database</div>
-            <div class="status-uptime">Uptime 99.99% · 5ms</div>
-          </div>
-        </div>
-        <div class="status-badge badge-online"><span class="pulse-dot"></span>Online</div>
-      </div>
-    </div>
-  </div>
+  <script>
+    // Sidebar
+    function openSidebar() {
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('overlay').classList.add('open');
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('overlay').classList.remove('open');
+    }
 
-  <!-- FEATURES -->
-  <div class="features-section">
-    <div class="section-title">All Features</div>
-    <div class="section-sub">// 15+ categories · 200+ endpoints</div>
-    <br>
-    <div class="features-grid">
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">🧠</span>
-        <div class="fc-name">AI</div>
-        <div class="fc-count">28 endpoints</div>
-        <div class="fc-desc">GPT, Gemini, image gen, text-to-speech, OCR & more</div>
-      </a>
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">🔐</span>
-        <div class="fc-name">Admin</div>
-        <div class="fc-count">12 endpoints</div>
-        <div class="fc-desc">API key management, rate limits, quota & analytics</div>
-      </a>
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">⚡</span>
-        <div class="fc-name">Cache</div>
-        <div class="fc-count">8 endpoints</div>
-        <div class="fc-desc">TTL control, flush, warm-up & cache statistics</div>
-      </a>
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">⬇️</span>
-        <div class="fc-name">Download</div>
-        <div class="fc-count">22 endpoints</div>
-        <div class="fc-desc">TikTok, YouTube, Instagram, Spotify, Twitter & more</div>
-      </a>
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">🎮</span>
-        <div class="fc-name">Fun</div>
-        <div class="fc-count">19 endpoints</div>
-        <div class="fc-desc">Memes, jokes, trivia, 8-ball, dare & truth games</div>
-      </a>
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">🏆</span>
-        <div class="fc-name">Leaderboard</div>
-        <div class="fc-count">10 endpoints</div>
-        <div class="fc-desc">Real-time rankings, user scores & global boards</div>
-      </a>
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">📚</span>
-        <div class="fc-name">Library</div>
-        <div class="fc-count">14 endpoints</div>
-        <div class="fc-desc">Books, quotes, dictionaries & language tools</div>
-      </a>
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">🎨</span>
-        <div class="fc-name">Maker</div>
-        <div class="fc-count">16 endpoints</div>
-        <div class="fc-desc">Image maker, QR code, canvas, meme generator</div>
-      </a>
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">📰</span>
-        <div class="fc-name">News</div>
-        <div class="fc-count">11 endpoints</div>
-        <div class="fc-desc">Latest headlines, trending topics & RSS feeds</div>
-      </a>
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">🎲</span>
-        <div class="fc-name">Random</div>
-        <div class="fc-count">9 endpoints</div>
-        <div class="fc-desc">Random words, numbers, colors, names & facts</div>
-      </a>
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">🔍</span>
-        <div class="fc-name">Search</div>
-        <div class="fc-count">13 endpoints</div>
-        <div class="fc-desc">Google, Wikipedia, anime, manga, npm & pypi</div>
-      </a>
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">👁️</span>
-        <div class="fc-name">Stalk</div>
-        <div class="fc-count">15 endpoints</div>
-        <div class="fc-desc">Instagram, TikTok, GitHub, Twitter profile info</div>
-      </a>
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">🛠️</span>
-        <div class="fc-name">Tools</div>
-        <div class="fc-count">24 endpoints</div>
-        <div class="fc-desc">URL shortener, converter, validator & encryption</div>
-      </a>
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">🎵</span>
-        <div class="fc-name">Music</div>
-        <div class="fc-count">7 endpoints</div>
-        <div class="fc-desc">Lyrics, chord, audio preview & metadata</div>
-      </a>
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">🌐</span>
-        <div class="fc-name">Web</div>
-        <div class="fc-count">10 endpoints</div>
-        <div class="fc-desc">Scraper, screenshot, meta extractor & whois</div>
-      </a>
-      <a class="feature-card" onclick="showPage('docs')">
-        <span class="fc-icon">🗺️</span>
-        <div class="fc-name">Geo & Weather</div>
-        <div class="fc-count">8 endpoints</div>
-        <div class="fc-desc">IP lookup, geocoding, forecast & timezone</div>
-      </a>
-    </div>
-  </div>
-
-  <footer>
-    <div class="footer-left">© 2024 Xyrooo FX Rest API Premium. Built with 💜</div>
-    <div class="footer-links">
-      <a class="footer-link" href="#">Docs</a>
-      <a class="footer-link" href="#">GitHub</a>
-      <a class="footer-link" href="#">Status</a>
-      <a class="footer-link" href="#">Terms</a>
-    </div>
-  </footer>
-</div>
-
-<!-- ───── DOCS PAGE ───── -->
-<div id="page-docs" class="page">
-  <div class="docs-layout">
-    <aside class="docs-sidebar">
-      <div class="sidebar-group">
-        <div class="sidebar-group-title">Getting Started</div>
-        <div class="sidebar-item active" onclick="scrollToSection('intro')">📖 Introduction</div>
-        <div class="sidebar-item" onclick="scrollToSection('auth')">🔑 Authentication</div>
-        <div class="sidebar-item" onclick="scrollToSection('ratelimit')">⏱ Rate Limits</div>
-        <div class="sidebar-item" onclick="scrollToSection('errors')">⚠️ Error Codes</div>
-      </div>
-      <div class="sidebar-group">
-        <div class="sidebar-group-title">AI</div>
-        <div class="sidebar-item" onclick="scrollToSection('ai-chat')">ChatAI <span class="method-tag get-tag">GET</span></div>
-        <div class="sidebar-item" onclick="scrollToSection('ai-imagine')">Imagine <span class="method-tag get-tag">GET</span></div>
-        <div class="sidebar-item" onclick="scrollToSection('ai-ocr')">OCR <span class="method-tag post-tag">POST</span></div>
-      </div>
-      <div class="sidebar-group">
-        <div class="sidebar-group-title">Download</div>
-        <div class="sidebar-item" onclick="scrollToSection('dl-tiktok')">TikTok <span class="method-tag get-tag">GET</span></div>
-        <div class="sidebar-item" onclick="scrollToSection('dl-yt')">YouTube <span class="method-tag get-tag">GET</span></div>
-        <div class="sidebar-item" onclick="scrollToSection('dl-ig')">Instagram <span class="method-tag get-tag">GET</span></div>
-      </div>
-      <div class="sidebar-group">
-        <div class="sidebar-group-title">Search</div>
-        <div class="sidebar-item" onclick="scrollToSection('s-google')">Google <span class="method-tag get-tag">GET</span></div>
-        <div class="sidebar-item" onclick="scrollToSection('s-wiki')">Wikipedia <span class="method-tag get-tag">GET</span></div>
-        <div class="sidebar-item" onclick="scrollToSection('s-anime')">Anime <span class="method-tag get-tag">GET</span></div>
-      </div>
-      <div class="sidebar-group">
-        <div class="sidebar-group-title">Stalk</div>
-        <div class="sidebar-item" onclick="scrollToSection('stalk-ig')">Instagram <span class="method-tag get-tag">GET</span></div>
-        <div class="sidebar-item" onclick="scrollToSection('stalk-gh')">GitHub <span class="method-tag get-tag">GET</span></div>
-      </div>
-      <div class="sidebar-group">
-        <div class="sidebar-group-title">Tools</div>
-        <div class="sidebar-item" onclick="scrollToSection('tool-qr')">QR Code <span class="method-tag get-tag">GET</span></div>
-        <div class="sidebar-item" onclick="scrollToSection('tool-short')">URL Shortener <span class="method-tag post-tag">POST</span></div>
-      </div>
-      <div class="sidebar-group">
-        <div class="sidebar-group-title">Fun & Random</div>
-        <div class="sidebar-item" onclick="scrollToSection('fun-meme')">Meme <span class="method-tag get-tag">GET</span></div>
-        <div class="sidebar-item" onclick="scrollToSection('fun-joke')">Joke <span class="method-tag get-tag">GET</span></div>
-      </div>
-    </aside>
-
-    <div class="docs-content">
-      <!-- INTRO -->
-      <div id="intro">
-        <h1 style="font-size:28px;font-weight:700;margin-bottom:8px;">Xyrooo FX API Documentation</h1>
-        <p style="color:var(--text-muted);font-family:var(--font-mono);font-size:13px;margin-bottom:24px;">Base URL: <code style="color:var(--purple-300)">https://api.xyrooo.fx/v1</code></p>
-
-        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:28px;">
-          <p style="color:var(--text-secondary);line-height:1.7;font-size:14px;">
-            Welcome to <strong style="color:var(--text-primary)">Xyrooo FX Rest API Premium</strong> — a high-performance multi-purpose API platform delivering 200+ endpoints across AI, downloaders, search, tools, fun, and more. All responses are returned in JSON format.
-          </p>
-          <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
-            <span class="cat-tag">JSON</span>
-            <span class="cat-tag">HTTPS Only</span>
-            <span class="cat-tag">UTF-8</span>
-            <span class="cat-tag">REST</span>
-            <span class="cat-tag">No CORS</span>
-          </div>
-        </div>
-
-        <!-- AUTH -->
-        <div id="auth" class="endpoint-block">
-          <div class="endpoint-header">
-            <span style="font-size:16px;">🔑</span>
-            <span class="endpoint-path">Authentication</span>
-          </div>
-          <div class="endpoint-body">
-            <p class="endpoint-desc">Include your API key in every request via the <code style="color:var(--purple-300);font-family:var(--font-mono)">apikey</code> query parameter or the <code style="color:var(--purple-300);font-family:var(--font-mono)">X-API-Key</code> header.</p>
-            <div class="code-label"><span>Example Request</span></div>
-            <div class="code-block">
-              <span class="json-key">GET</span> <span class="json-str">https://api.xyrooo.fx/v1/ai/chat?q=hello&apikey=YOUR_KEY</span>
-              <br><br>
-              <span class="json-key">// Or via Header:</span><br>
-              <span class="json-str">X-API-Key: YOUR_KEY</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- RATE LIMIT -->
-        <div id="ratelimit" class="endpoint-block">
-          <div class="endpoint-header">
-            <span style="font-size:16px;">⏱</span>
-            <span class="endpoint-path">Rate Limits</span>
-          </div>
-          <div class="endpoint-body">
-            <table class="params-table">
-              <tr><th>Plan</th><th>Requests/Min</th><th>Requests/Day</th></tr>
-              <tr><td>Free</td><td style="color:var(--text-secondary)">30</td><td style="color:var(--text-secondary)">500</td></tr>
-              <tr><td>Basic</td><td style="color:var(--text-secondary)">100</td><td style="color:var(--text-secondary)">5,000</td></tr>
-              <tr><td>Premium</td><td style="color:var(--text-secondary)">500</td><td style="color:var(--text-secondary)">50,000</td></tr>
-              <tr><td>Enterprise</td><td style="color:var(--text-secondary)">∞</td><td style="color:var(--text-secondary)">∞</td></tr>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- AI CHAT -->
-      <div id="ai-chat" class="endpoint-block">
-        <div class="endpoint-header">
-          <span class="method-badge method-get">GET</span>
-          <span class="endpoint-path">/ai/chat</span>
-          <button class="endpoint-copy" onclick="copyText('/ai/chat')">Copy</button>
-        </div>
-        <div class="endpoint-body">
-          <p class="endpoint-desc">AI conversational chat powered by multiple LLM backends. Supports context memory, model selection, and streaming responses.</p>
-          <table class="params-table">
-            <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-            <tr><td>q<span class="required-tag">required</span></td><td style="color:var(--text-muted)">string</td><td>Your message or prompt</td></tr>
-            <tr><td>model<span class="optional-tag">optional</span></td><td style="color:var(--text-muted)">string</td><td>gpt4 | gemini | mistral (default: gpt4)</td></tr>
-            <tr><td>system<span class="optional-tag">optional</span></td><td style="color:var(--text-muted)">string</td><td>System prompt / persona</td></tr>
-            <tr><td>sessionId<span class="optional-tag">optional</span></td><td style="color:var(--text-muted)">string</td><td>Session ID for memory context</td></tr>
-          </table>
-          <div class="code-label"><span>Response</span></div>
-          <div class="code-block">
-{<br>
-&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-bool">true</span>,<br>
-&nbsp;&nbsp;<span class="json-key">"creator"</span>: <span class="json-str">"Xyrooo FX"</span>,<br>
-&nbsp;&nbsp;<span class="json-key">"model"</span>: <span class="json-str">"gpt-4-turbo"</span>,<br>
-&nbsp;&nbsp;<span class="json-key">"result"</span>: {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"reply"</span>: <span class="json-str">"Hello! How can I assist you today?"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"tokens"</span>: <span class="json-num">18</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"sessionId"</span>: <span class="json-str">"sess_xfx_a8c2d1"</span><br>
-&nbsp;&nbsp;}<br>
-}
-          </div>
-          <button class="try-btn" onclick="tryEndpoint('ai-chat')">▶ Try It</button>
-          <div id="res-ai-chat" class="response-preview">
-            <div class="response-status res-200">● 200 OK · 214ms</div>
-            <div class="code-block">
-{<br>
-&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-bool">true</span>,<br>
-&nbsp;&nbsp;<span class="json-key">"creator"</span>: <span class="json-str">"Xyrooo FX"</span>,<br>
-&nbsp;&nbsp;<span class="json-key">"result"</span>: {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"reply"</span>: <span class="json-str">"Hi there! I'm XyroAI, ready to help."</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"tokens"</span>: <span class="json-num">12</span><br>
-&nbsp;&nbsp;}<br>
-}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- AI IMAGINE -->
-      <div id="ai-imagine" class="endpoint-block">
-        <div class="endpoint-header">
-          <span class="method-badge method-get">GET</span>
-          <span class="endpoint-path">/ai/imagine</span>
-          <button class="endpoint-copy" onclick="copyText('/ai/imagine')">Copy</button>
-        </div>
-        <div class="endpoint-body">
-          <p class="endpoint-desc">Generate AI images from text prompts. Supports multiple art styles and resolutions.</p>
-          <table class="params-table">
-            <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-            <tr><td>prompt<span class="required-tag">required</span></td><td style="color:var(--text-muted)">string</td><td>Image generation prompt</td></tr>
-            <tr><td>style<span class="optional-tag">optional</span></td><td style="color:var(--text-muted)">string</td><td>realistic | anime | painting | pixel</td></tr>
-            <tr><td>ratio<span class="optional-tag">optional</span></td><td style="color:var(--text-muted)">string</td><td>1:1 | 16:9 | 9:16 (default: 1:1)</td></tr>
-          </table>
-          <div class="code-label"><span>Response</span></div>
-          <div class="code-block">
-{<br>
-&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-bool">true</span>,<br>
-&nbsp;&nbsp;<span class="json-key">"result"</span>: {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"url"</span>: <span class="json-str">"https://cdn.xyrooo.fx/img/abc123.webp"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"width"</span>: <span class="json-num">1024</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"height"</span>: <span class="json-num">1024</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"style"</span>: <span class="json-str">"realistic"</span><br>
-&nbsp;&nbsp;}<br>
-}
-          </div>
-          <button class="try-btn" onclick="tryEndpoint('ai-imagine')">▶ Try It</button>
-          <div id="res-ai-imagine" class="response-preview"></div>
-        </div>
-      </div>
-
-      <!-- DOWNLOAD TIKTOK -->
-      <div id="dl-tiktok" class="endpoint-block">
-        <div class="endpoint-header">
-          <span class="method-badge method-get">GET</span>
-          <span class="endpoint-path">/download/tiktok</span>
-          <button class="endpoint-copy" onclick="copyText('/download/tiktok')">Copy</button>
-        </div>
-        <div class="endpoint-body">
-          <p class="endpoint-desc">Download TikTok videos without watermark. Returns video, audio, and thumbnail URLs.</p>
-          <table class="params-table">
-            <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-            <tr><td>url<span class="required-tag">required</span></td><td style="color:var(--text-muted)">string</td><td>TikTok video URL</td></tr>
-          </table>
-          <div class="code-label"><span>Response</span></div>
-          <div class="code-block">
-{<br>
-&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-bool">true</span>,<br>
-&nbsp;&nbsp;<span class="json-key">"result"</span>: {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"title"</span>: <span class="json-str">"My awesome TikTok"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"author"</span>: <span class="json-str">"@user123"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"video_nowm"</span>: <span class="json-str">"https://cdn.xyrooo.fx/tt/video.mp4"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"audio"</span>: <span class="json-str">"https://cdn.xyrooo.fx/tt/audio.mp3"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"thumbnail"</span>: <span class="json-str">"https://cdn.xyrooo.fx/tt/thumb.jpg"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"likes"</span>: <span class="json-num">128400</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"views"</span>: <span class="json-num">2100000</span><br>
-&nbsp;&nbsp;}<br>
-}
-          </div>
-          <button class="try-btn" onclick="tryEndpoint('dl-tiktok')">▶ Try It</button>
-          <div id="res-dl-tiktok" class="response-preview"></div>
-        </div>
-      </div>
-
-      <!-- SEARCH GOOGLE -->
-      <div id="s-google" class="endpoint-block">
-        <div class="endpoint-header">
-          <span class="method-badge method-get">GET</span>
-          <span class="endpoint-path">/search/google</span>
-          <button class="endpoint-copy" onclick="copyText('/search/google')">Copy</button>
-        </div>
-        <div class="endpoint-body">
-          <p class="endpoint-desc">Search Google and return structured results including titles, links, and snippets.</p>
-          <table class="params-table">
-            <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-            <tr><td>q<span class="required-tag">required</span></td><td style="color:var(--text-muted)">string</td><td>Search query</td></tr>
-            <tr><td>limit<span class="optional-tag">optional</span></td><td style="color:var(--text-muted)">number</td><td>Max results (default: 10)</td></tr>
-            <tr><td>lang<span class="optional-tag">optional</span></td><td style="color:var(--text-muted)">string</td><td>Language code (default: en)</td></tr>
-          </table>
-          <div class="code-label"><span>Response</span></div>
-          <div class="code-block">
-{<br>
-&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-bool">true</span>,<br>
-&nbsp;&nbsp;<span class="json-key">"result"</span>: [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"title"</span>: <span class="json-str">"Result Title"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"link"</span>: <span class="json-str">"https://example.com"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"snippet"</span>: <span class="json-str">"Description of the result..."</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;]<br>
-}
-          </div>
-          <button class="try-btn" onclick="tryEndpoint('s-google')">▶ Try It</button>
-          <div id="res-s-google" class="response-preview"></div>
-        </div>
-      </div>
-
-      <!-- STALK INSTAGRAM -->
-      <div id="stalk-ig" class="endpoint-block">
-        <div class="endpoint-header">
-          <span class="method-badge method-get">GET</span>
-          <span class="endpoint-path">/stalk/instagram</span>
-          <button class="endpoint-copy" onclick="copyText('/stalk/instagram')">Copy</button>
-        </div>
-        <div class="endpoint-body">
-          <p class="endpoint-desc">Retrieve public Instagram profile data including follower counts, bio, and recent posts.</p>
-          <table class="params-table">
-            <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-            <tr><td>username<span class="required-tag">required</span></td><td style="color:var(--text-muted)">string</td><td>Instagram username (without @)</td></tr>
-          </table>
-          <div class="code-label"><span>Response</span></div>
-          <div class="code-block">
-{<br>
-&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-bool">true</span>,<br>
-&nbsp;&nbsp;<span class="json-key">"result"</span>: {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"username"</span>: <span class="json-str">"xyrooo_fx"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"fullname"</span>: <span class="json-str">"Xyrooo FX"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"followers"</span>: <span class="json-num">84200</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"following"</span>: <span class="json-num">312</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"posts"</span>: <span class="json-num">97</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"bio"</span>: <span class="json-str">"Premium API Platform 🚀"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"avatar"</span>: <span class="json-str">"https://cdn.example.com/av.jpg"</span><br>
-&nbsp;&nbsp;}<br>
-}
-          </div>
-          <button class="try-btn" onclick="tryEndpoint('stalk-ig')">▶ Try It</button>
-          <div id="res-stalk-ig" class="response-preview"></div>
-        </div>
-      </div>
-
-      <!-- TOOL QR -->
-      <div id="tool-qr" class="endpoint-block">
-        <div class="endpoint-header">
-          <span class="method-badge method-get">GET</span>
-          <span class="endpoint-path">/tools/qrcode</span>
-          <button class="endpoint-copy" onclick="copyText('/tools/qrcode')">Copy</button>
-        </div>
-        <div class="endpoint-body">
-          <p class="endpoint-desc">Generate QR codes from any text, URL, or data. Returns PNG image URL.</p>
-          <table class="params-table">
-            <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-            <tr><td>text<span class="required-tag">required</span></td><td style="color:var(--text-muted)">string</td><td>Content to encode</td></tr>
-            <tr><td>size<span class="optional-tag">optional</span></td><td style="color:var(--text-muted)">number</td><td>Size in px (default: 300)</td></tr>
-            <tr><td>color<span class="optional-tag">optional</span></td><td style="color:var(--text-muted)">string</td><td>Hex color code</td></tr>
-          </table>
-          <button class="try-btn" onclick="tryEndpoint('tool-qr')">▶ Try It</button>
-          <div id="res-tool-qr" class="response-preview"></div>
-        </div>
-      </div>
-
-      <!-- ERRORS -->
-      <div id="errors" class="endpoint-block">
-        <div class="endpoint-header">
-          <span style="font-size:16px;">⚠️</span>
-          <span class="endpoint-path">Error Codes</span>
-        </div>
-        <div class="endpoint-body">
-          <table class="params-table">
-            <tr><th>Code</th><th>Message</th><th>Description</th></tr>
-            <tr><td style="color:var(--error)">400</td><td style="color:var(--text-secondary)">Bad Request</td><td>Missing or invalid parameters</td></tr>
-            <tr><td style="color:var(--warning)">401</td><td style="color:var(--text-secondary)">Unauthorized</td><td>Invalid or missing API key</td></tr>
-            <tr><td style="color:var(--warning)">429</td><td style="color:var(--text-secondary)">Too Many Requests</td><td>Rate limit exceeded</td></tr>
-            <tr><td style="color:var(--error)">500</td><td style="color:var(--text-secondary)">Internal Error</td><td>Server-side error, retry later</td></tr>
-            <tr><td style="color:var(--text-muted)">503</td><td style="color:var(--text-secondary)">Service Unavailable</td><td>Endpoint temporarily offline</td></tr>
-          </table>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- ───── DASHBOARD PAGE ───── -->
-<div id="page-dashboard" class="page">
-  <div class="dashboard">
-    <div class="dash-header">
-      <div>
-        <div class="dash-title">Dashboard <span class="tier-badge tier-premium">✦ Premium</span></div>
-        <div class="dash-sub">// Xyrooo FX · API Key: xfx_••••••••••••••••3a9f</div>
-      </div>
-      <div class="dash-actions">
-        <a class="btn-github" href="#">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.341-3.369-1.341-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.742 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/></svg>
-          View on GitHub
-        </a>
-        <button class="btn-primary">↻ Refresh</button>
-      </div>
-    </div>
-
-    <!-- KPI CARDS -->
-    <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-icon">📡</div>
-        <div class="kpi-label">Today's Requests</div>
-        <div class="kpi-value">48,291</div>
-        <div class="kpi-change kpi-up">▲ 12.4% vs yesterday</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">⚡</div>
-        <div class="kpi-label">Avg. Latency</div>
-        <div class="kpi-value">47ms</div>
-        <div class="kpi-change kpi-up">▼ 8ms faster</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">✅</div>
-        <div class="kpi-label">Success Rate</div>
-        <div class="kpi-value">99.2%</div>
-        <div class="kpi-change kpi-up">▲ 0.3% this week</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">🔑</div>
-        <div class="kpi-label">Quota Used</div>
-        <div class="kpi-value">48.3%</div>
-        <div class="kpi-change" style="color:var(--text-muted)">24,150 / 50,000 daily</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">❌</div>
-        <div class="kpi-label">Errors (24h)</div>
-        <div class="kpi-value">386</div>
-        <div class="kpi-change kpi-down">▲ +21 from yesterday</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">🌐</div>
-        <div class="kpi-label">Active Endpoints</div>
-        <div class="kpi-value">214</div>
-        <div class="kpi-change kpi-up">▲ +6 new this month</div>
-      </div>
-    </div>
-
-    <!-- CHARTS ROW -->
-    <div class="dash-grid-2">
-      <div class="chart-card">
-        <div class="chart-title">Requests per Hour</div>
-        <div class="chart-sub">// last 12 hours</div>
-        <div class="bar-chart" id="barChart">
-          <!-- Generated by JS -->
-        </div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Latency Trend</div>
-        <div class="chart-sub">// ms over time</div>
-        <div class="line-chart">
-          <svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#a855f7" stop-opacity="0.3"/>
-                <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-            <path d="M0,80 C30,70 50,90 80,60 C110,30 130,85 160,55 C190,25 210,70 240,45 C260,28 280,55 300,40" stroke="#a855f7" stroke-width="2" fill="none"/>
-            <path d="M0,80 C30,70 50,90 80,60 C110,30 130,85 160,55 C190,25 210,70 240,45 C260,28 280,55 300,40 L300,120 L0,120 Z" fill="url(#lineGrad)"/>
-          </svg>
-        </div>
-      </div>
-    </div>
-
-    <!-- TOP ENDPOINTS USAGE -->
-    <div class="dash-grid-2">
-      <div class="chart-card">
-        <div class="chart-title">Top Endpoints</div>
-        <div class="chart-sub">// usage share today</div>
-        <br>
-        <div class="usage-item"><span class="usage-name">/ai/chat</span><div class="usage-bar-track"><div class="usage-bar-fill" style="width:82%"></div></div><span class="usage-pct">82%</span></div>
-        <div class="usage-item"><span class="usage-name">/download/tiktok</span><div class="usage-bar-track"><div class="usage-bar-fill" style="width:65%"></div></div><span class="usage-pct">65%</span></div>
-        <div class="usage-item"><span class="usage-name">/search/google</span><div class="usage-bar-track"><div class="usage-bar-fill" style="width:51%"></div></div><span class="usage-pct">51%</span></div>
-        <div class="usage-item"><span class="usage-name">/stalk/instagram</span><div class="usage-bar-track"><div class="usage-bar-fill" style="width:44%"></div></div><span class="usage-pct">44%</span></div>
-        <div class="usage-item"><span class="usage-name">/ai/imagine</span><div class="usage-bar-track"><div class="usage-bar-fill" style="width:38%"></div></div><span class="usage-pct">38%</span></div>
-        <div class="usage-item"><span class="usage-name">/tools/qrcode</span><div class="usage-bar-track"><div class="usage-bar-fill" style="width:27%"></div></div><span class="usage-pct">27%</span></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Category Breakdown</div>
-        <div class="chart-sub">// requests by category</div>
-        <br>
-        <div class="usage-item"><span class="usage-name">🧠 AI</span><div class="usage-bar-track"><div class="usage-bar-fill" style="width:78%"></div></div><span class="usage-pct">78%</span></div>
-        <div class="usage-item"><span class="usage-name">⬇️ Download</span><div class="usage-bar-track"><div class="usage-bar-fill" style="width:62%"></div></div><span class="usage-pct">62%</span></div>
-        <div class="usage-item"><span class="usage-name">🔍 Search</span><div class="usage-bar-track"><div class="usage-bar-fill" style="width:49%"></div></div><span class="usage-pct">49%</span></div>
-        <div class="usage-item"><span class="usage-name">👁️ Stalk</span><div class="usage-bar-track"><div class="usage-bar-fill" style="width:41%"></div></div><span class="usage-pct">41%</span></div>
-        <div class="usage-item"><span class="usage-name">🛠️ Tools</span><div class="usage-bar-track"><div class="usage-bar-fill" style="width:33%"></div></div><span class="usage-pct">33%</span></div>
-        <div class="usage-item"><span class="usage-name">🎮 Fun</span><div class="usage-bar-track"><div class="usage-bar-fill" style="width:22%"></div></div><span class="usage-pct">22%</span></div>
-      </div>
-    </div>
-
-    <!-- API KEY SECTION -->
-    <div class="key-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-        <div>
-          <div class="chart-title">Your API Key</div>
-          <div class="chart-sub">// treat this like a password</div>
-        </div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn-github" onclick="regenerateKey()">↺ Regenerate</button>
-          <button class="btn-primary" onclick="copyApiKey()">Copy Key</button>
-        </div>
-      </div>
-      <div class="key-display">
-        <span class="key-value" id="apiKeyDisplay">xfx_••••••••••••••••••••••••••••3a9f</span>
-        <button class="key-toggle" onclick="toggleApiKey()">👁 Show</button>
-      </div>
-      <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:12px;">
-        <div style="font-size:12px;color:var(--text-muted)">Plan: <span style="color:var(--purple-300);font-weight:600;">Premium</span></div>
-        <div style="font-size:12px;color:var(--text-muted)">Quota: <span style="color:var(--text-secondary);">24,150 / 50,000</span></div>
-        <div style="font-size:12px;color:var(--text-muted)">Created: <span style="color:var(--text-secondary);">2024-01-15</span></div>
-        <div style="font-size:12px;color:var(--text-muted)">Expires: <span style="color:var(--warning);">2025-01-15</span></div>
-      </div>
-    </div>
-
-    <!-- RECENT REQUESTS TABLE -->
-    <div class="table-card">
-      <div class="table-head">
-        <div class="table-title">Recent API Requests</div>
-        <span style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono);">Live · auto-refresh 30s</span>
-      </div>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Endpoint</th>
-            <th>Method</th>
-            <th>Status</th>
-            <th>Latency</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-        <tbody id="reqTable">
-          <!-- Populated by JS -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <footer>
-    <div class="footer-left">© 2024 Xyrooo FX Rest API Premium · Dashboard v2.0</div>
-    <div class="footer-links">
-      <a class="footer-link" href="#">Docs</a>
-      <a class="footer-link" href="#">GitHub</a>
-      <a class="footer-link" href="#">Support</a>
-    </div>
-  </footer>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <span id="toastMsg">Copied!</span>
-</div>
-
-<script>
-// ── PAGE ROUTER ──
-function showPage(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  const navBtns = document.querySelectorAll('.nav-link');
-  const pages = ['home','docs','dashboard'];
-  const idx = pages.indexOf(page);
-  if (navBtns[idx]) navBtns[idx].classList.add('active');
-  window.scrollTo(0,0);
-}
-
-// ── TOAST ──
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  document.getElementById('toastMsg').textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-function copyText(txt) {
-  navigator.clipboard.writeText('https://api.xyrooo.fx/v1' + txt);
-  showToast('Endpoint URL copied!');
-}
-
-// ── TRY ENDPOINT ──
-function tryEndpoint(id) {
-  const el = document.getElementById('res-' + id);
-  if (!el) return;
-  el.classList.add('visible');
-  if (id === 'ai-imagine') {
-    el.innerHTML = `<div class="response-status res-200">● 200 OK · 1842ms</div>
-    <div class="code-block">{<br>&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-bool">true</span>,<br>&nbsp;&nbsp;<span class="json-key">"result"</span>: {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"url"</span>: <span class="json-str">"https://cdn.xyrooo.fx/img/gen_9f2d.webp"</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"width"</span>: <span class="json-num">1024</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"height"</span>: <span class="json-num">1024</span><br>&nbsp;&nbsp;}<br>}</div>`;
-  } else if (id === 'dl-tiktok') {
-    el.innerHTML = `<div class="response-status res-200">● 200 OK · 392ms</div>
-    <div class="code-block">{<br>&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-bool">true</span>,<br>&nbsp;&nbsp;<span class="json-key">"result"</span>: {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"title"</span>: <span class="json-str">"Sample Video"</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"video_nowm"</span>: <span class="json-str">"https://cdn.xyrooo.fx/tt/dl_abc.mp4"</span><br>&nbsp;&nbsp;}<br>}</div>`;
-  } else if (id === 's-google') {
-    el.innerHTML = `<div class="response-status res-200">● 200 OK · 128ms</div>
-    <div class="code-block">{<br>&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-bool">true</span>,<br>&nbsp;&nbsp;<span class="json-key">"result"</span>: [{ <span class="json-key">"title"</span>: <span class="json-str">"Example"</span>, <span class="json-key">"link"</span>: <span class="json-str">"https://example.com"</span> }]<br>}</div>`;
-  } else if (id === 'stalk-ig') {
-    el.innerHTML = `<div class="response-status res-200">● 200 OK · 280ms</div>
-    <div class="code-block">{<br>&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-bool">true</span>,<br>&nbsp;&nbsp;<span class="json-key">"result"</span>: {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"username"</span>: <span class="json-str">"demo_user"</span>,<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"followers"</span>: <span class="json-num">12400</span><br>&nbsp;&nbsp;}<br>}</div>`;
-  } else if (id === 'tool-qr') {
-    el.innerHTML = `<div class="response-status res-200">● 200 OK · 54ms</div>
-    <div class="code-block">{<br>&nbsp;&nbsp;<span class="json-key">"status"</span>: <span class="json-bool">true</span>,<br>&nbsp;&nbsp;<span class="json-key">"result"</span>: {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"url"</span>: <span class="json-str">"https://cdn.xyrooo.fx/qr/q_8ab2.png"</span><br>&nbsp;&nbsp;}<br>}</div>`;
-  }
-  showToast('Request sent!');
-}
-
-// ── BAR CHART ──
-const hours = ['12AM','1','2','3','4','5','6','7','8','9','10','11'];
-const vals = [12, 8, 6, 9, 14, 22, 38, 54, 71, 68, 82, 76];
-const maxVal = Math.max(...vals);
-const bc = document.getElementById('barChart');
-if (bc) {
-  hours.forEach((h, i) => {
-    const pct = (vals[i] / maxVal) * 100;
-    const col = document.createElement('div');
-    col.className = 'bar-col';
-    col.innerHTML = `<div class="bar" style="height:${pct}%" title="${vals[i]}00 req"></div><span class="bar-label">${h}</span>`;
-    bc.appendChild(col);
-  });
-}
-
-// ── REQ TABLE ──
-const endpoints = [
-  ['/ai/chat', 'GET', 200, 214],
-  ['/download/tiktok', 'GET', 200, 392],
-  ['/search/google', 'GET', 200, 128],
-  ['/stalk/instagram', 'GET', 200, 280],
-  ['/ai/imagine', 'GET', 200, 1842],
-  ['/tools/qrcode', 'GET', 200, 54],
-  ['/download/youtube', 'GET', 429, 12],
-  ['/fun/meme', 'GET', 200, 88],
-  ['/news/trending', 'GET', 200, 145],
-  ['/tools/shorturl', 'POST', 200, 39],
-];
-const table = document.getElementById('reqTable');
-const times = ['just now','1m ago','2m ago','3m ago','5m ago','7m ago','9m ago','12m ago','14m ago','18m ago'];
-if (table) {
-  endpoints.forEach((ep, i) => {
-    const [path, method, status, lat] = ep;
-    const sc = status === 200 ? 'badge-online' : 'badge-offline';
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td class="endpoint-pill">${path}</td>
-      <td><span class="method-tag ${method === 'GET' ? 'get-tag' : 'post-tag'}">${method}</span></td>
-      <td><span class="status-pill ${sc}">${status}</span></td>
-      <td style="font-family:var(--font-mono);font-size:12px;color:${lat < 100 ? 'var(--success)' : lat < 500 ? 'var(--text-secondary)' : 'var(--warning)'}">${lat}ms</td>
-      <td style="font-size:12px;color:var(--text-muted)">${times[i]}</td>
-    `;
-    table.appendChild(row);
-  });
-}
-
-// ── API KEY ──
-let keyVisible = false;
-const realKey = 'xfx_k8s2nd19xp_xyrooo_premium_3a9f';
-function toggleApiKey() {
-  keyVisible = !keyVisible;
-  const el = document.getElementById('apiKeyDisplay');
-  el.textContent = keyVisible ? realKey : 'xfx_••••••••••••••••••••••••••••3a9f';
-  document.querySelector('.key-toggle').textContent = keyVisible ? '🙈 Hide' : '👁 Show';
-}
-function copyApiKey() {
-  navigator.clipboard.writeText(realKey);
-  showToast('API Key copied to clipboard!');
-}
-function regenerateKey() {
-  showToast('Key regeneration requires confirmation email.');
-}
-</script>
-</div>
+    // Floating particles
+    const container = document.getElementById('particles');
+    const colors = ['#a855f7','#7c3aed','#c084fc','#e9d5ff','#6d28d9'];
+    for (let i = 0; i < 28; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 4 + 1;
+      p.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random()*100}%;
+        bottom:${Math.random()*20}%;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        animation-duration:${Math.random()*12+8}s;
+        animation-delay:${Math.random()*10}s;
+        opacity:0;
+        box-shadow:0 0 ${size*2}px ${colors[Math.floor(Math.random()*colors.length)]};
+      `;
+      container.appendChild(p);
+    }
+  </script>
 </body>
 </html>
