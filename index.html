@@ -1,631 +1,411 @@
 import React, { useState } from "react";
 import {
-  LayoutDashboard, ShoppingCart, Wallet, Smartphone, Image as ImageIcon,
-  CreditCard, Globe, FolderTree, Package, Tag, Users, Swords,
-  ClipboardList, Search, Bell, ChevronDown, Plus, Pencil, Trash2,
-  CheckCircle2, Clock, XCircle, Power, ToggleLeft, ToggleRight,
-  TrendingUp, ArrowUpRight, ArrowDownRight, Zap
+  Zap, Github, Mail, Lock, Eye, EyeOff, Gift, ArrowRight, Copy, Check,
+  RefreshCw, Activity, Server, Key, Globe, BarChart3, Clock, ShieldCheck,
+  ChevronDown, Bell, Settings, LogOut, Plus, Trash2, AlertCircle, Wifi
 } from "lucide-react";
 
-/* ---------------------------------- DATA ---------------------------------- */
+/* ------------------------------- helper UI ------------------------------- */
 
-const NAV = [
-  { group: "Utama", items: [
-    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  ]},
-  { group: "Transaksi", items: [
-    { id: "pesanan", label: "Pesanan", icon: ShoppingCart },
-    { id: "deposit", label: "Deposit", icon: Wallet },
-    { id: "manual", label: "Proses Orderan Manual", icon: ClipboardList },
-  ]},
-  { group: "Pengaturan Mutasi", items: [
-    { id: "ovo", label: "Cek Mutasi OVO", icon: Smartphone },
-    { id: "gopay", label: "Cek Mutasi Gopay", icon: Smartphone },
-  ]},
-  { group: "Pengaturan Website", items: [
-    { id: "slider", label: "Iklan Slider", icon: ImageIcon },
-    { id: "payment", label: "Metode Pembayaran", icon: CreditCard },
-    { id: "profil", label: "Profil Web", icon: Globe },
-    { id: "kategori", label: "Kategori Produk", icon: FolderTree },
-    { id: "produk", label: "Produk", icon: Package },
-    { id: "voucher", label: "Voucher Diskon", icon: Tag },
-  ]},
-  { group: "Manajemen", items: [
-    { id: "pengguna", label: "Kelola Pengguna", icon: Users },
-    { id: "joki", label: "Jasa Joki ML", icon: Swords },
-  ]},
-];
-
-const ORDERS = [
-  { id: "TRX17725", produk: "Mobile Legends 86 Diamond", user: "rafi_88", status: "sukses", harga: 21000, provider: "Digiflazz", waktu: "09:12" },
-  { id: "TRX17724", produk: "Free Fire 140 Diamond", user: "ayu.k", status: "proses", harga: 19500, provider: "VIP Payment", waktu: "09:08" },
-  { id: "TRX17723", produk: "PUBGM 60 UC", user: "dimas_x", status: "gagal", harga: 14000, provider: "Api Games", waktu: "08:55" },
-  { id: "TRX17722", produk: "Genshin Impact 60 Genesis", user: "lia_99", status: "sukses", harga: 17000, provider: "Digiflazz", waktu: "08:40" },
-  { id: "TRX17721", produk: "Valorant 125 Points", user: "bayu.s", status: "pending", harga: 26500, provider: "VIP Payment", waktu: "08:21" },
-];
-
-const DEPOSITS = [
-  { id: "DEP9012", user: "rafi_88", metode: "QRIS", jumlah: 100000, status: "berhasil", waktu: "08:02" },
-  { id: "DEP9011", user: "toko_emas", metode: "Gopay", jumlah: 500000, status: "berhasil", waktu: "07:48" },
-  { id: "DEP9010", user: "vendor_aa", metode: "OVO", jumlah: 250000, status: "pending", waktu: "07:30" },
-];
-
-const PRODUCTS = [
-  { id: "P-001", nama: "Mobile Legends 86 Diamond", kategori: "Mobile Legends", harga: 21000, modal: 18500, stok: "tersedia" },
-  { id: "P-002", nama: "Free Fire 140 Diamond", kategori: "Free Fire", harga: 19500, modal: 17200, stok: "tersedia" },
-  { id: "P-003", nama: "PUBGM 60 UC", kategori: "PUBG Mobile", harga: 14000, modal: 12100, stok: "habis" },
-];
-
-const VOUCHERS = [
-  { kode: "GAJIAN10", diskon: "10%", min: 20000, kuota: 124, aktif: true },
-  { kode: "NEWUSER5K", diskon: "Rp5.000", min: 15000, kuota: 38, aktif: true },
-  { kode: "FLASHSALE", diskon: "15%", min: 50000, kuota: 0, aktif: false },
-];
-
-const USERS = [
-  { nama: "rafi_88", level: "Gold", saldo: 145000, transaksi: 312, join: "Jan 2024" },
-  { nama: "ayu.k", level: "Platinum", saldo: 980000, transaksi: 871, join: "Aug 2023" },
-  { nama: "dimas_x", level: "Member", saldo: 12000, transaksi: 9, join: "Jun 2026" },
-];
-
-const JOKI = [
-  { id: "JK-21", user: "rafi_88", rank: "Epic → Legend", harga: 75000, status: "berjalan", joki: "Akira" },
-  { id: "JK-20", user: "bayu.s", rank: "Mythic → Mythical Glory", harga: 250000, status: "menunggu", joki: "-" },
-  { id: "JK-19", user: "lia_99", rank: "Grandmaster → Mythic", harga: 60000, status: "selesai", joki: "Vega" },
-];
-
-const fmt = (n) => "Rp" + n.toLocaleString("id-ID");
-
-/* ------------------------------ SMALL ELEMENTS ----------------------------- */
-
-function StatusPill({ status }) {
-  const map = {
-    sukses: { c: "text-[#00E5C7] bg-[#00E5C7]/10 ring-[#00E5C7]/30", icon: CheckCircle2 },
-    berhasil: { c: "text-[#00E5C7] bg-[#00E5C7]/10 ring-[#00E5C7]/30", icon: CheckCircle2 },
-    selesai: { c: "text-[#00E5C7] bg-[#00E5C7]/10 ring-[#00E5C7]/30", icon: CheckCircle2 },
-    proses: { c: "text-[#7C5CFF] bg-[#7C5CFF]/10 ring-[#7C5CFF]/30", icon: Clock },
-    berjalan: { c: "text-[#7C5CFF] bg-[#7C5CFF]/10 ring-[#7C5CFF]/30", icon: Clock },
-    pending: { c: "text-[#FFB020] bg-[#FFB020]/10 ring-[#FFB020]/30", icon: Clock },
-    menunggu: { c: "text-[#FFB020] bg-[#FFB020]/10 ring-[#FFB020]/30", icon: Clock },
-    gagal: { c: "text-[#FF4D6A] bg-[#FF4D6A]/10 ring-[#FF4D6A]/30", icon: XCircle },
-    habis: { c: "text-[#FF4D6A] bg-[#FF4D6A]/10 ring-[#FF4D6A]/30", icon: XCircle },
-    tersedia: { c: "text-[#00E5C7] bg-[#00E5C7]/10 ring-[#00E5C7]/30", icon: CheckCircle2 },
-  };
-  const m = map[status] || map.pending;
-  const Icon = m.icon;
+function GoogleIcon({ size = 18 }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ring-1 ${m.c}`}>
-      <Icon size={12} /> {status}
+    <svg width={size} height={size} viewBox="0 0 48 48">
+      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/>
+      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 7.1 29.6 5 24 5c-7.7 0-14.3 4.4-17.7 9.7z"/>
+      <path fill="#4CAF50" d="M24 44c5.5 0 10.4-1.8 14-5l-6.5-5.3C29.6 35.4 26.9 36 24 36c-5.3 0-9.7-3.1-11.3-7.6l-6.6 5.1C9.6 39.5 16.2 44 24 44z"/>
+      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1 2.8-3 5.2-5.6 6.7l6.5 5.3C39.8 37.4 44 31.6 44 24c0-1.3-.1-2.7-.4-3.5z"/>
+    </svg>
+  );
+}
+
+function LightningButton({ children, onClick, variant = "primary", className = "", icon: Icon, type = "button" }) {
+  const base = "relative w-full flex items-center justify-center gap-2 font-semibold text-sm rounded-xl px-4 py-3 transition active:scale-[0.98]";
+  const styles = {
+    primary: "text-black bg-[#B98CFF] hover:bg-[#C9A6FF] shadow-[0_0_24px_-4px_#B98CFF]",
+    outline: "text-[#E9E4F5] bg-white/[0.03] border border-white/10 hover:border-[#B98CFF]/50 hover:bg-white/[0.05]",
+    ghost: "text-[#9D94B5] hover:text-[#E9E4F5]",
+  };
+  return (
+    <button type={type} onClick={onClick} className={`${base} ${styles[variant]} ${className}`}>
+      {Icon && <Icon size={17} />}{children}
+    </button>
+  );
+}
+
+function FieldLabel({ children }) {
+  return <label className="text-xs font-medium text-[#9D94B5] mb-1.5 block">{children}</label>;
+}
+
+function TextField({ icon: Icon, type = "text", placeholder, value, onChange, suffix }) {
+  return (
+    <div className="relative">
+      {Icon && <Icon size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6B6280]" />}
+      <input
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        className={`w-full bg-[#15111F] border border-white/10 rounded-xl py-3 text-sm text-[#E9E4F5] placeholder:text-[#5A5270] focus:outline-none focus:ring-2 focus:ring-[#B98CFF]/40 focus:border-[#B98CFF]/60 ${Icon ? "pl-10" : "pl-3.5"} ${suffix ? "pr-10" : "pr-3.5"}`}
+      />
+      {suffix}
+    </div>
+  );
+}
+
+/* ----------------------------- AUTH SCREENS ----------------------------- */
+
+function AuthShell({ children }) {
+  return (
+    <div className="min-h-screen bg-[#0A0710] relative flex items-center justify-center px-4 py-10 overflow-hidden">
+      {/* lightning glow backdrop */}
+      <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#7C3AED]/20 rounded-full blur-[120px]" />
+      <div className="pointer-events-none absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#B98CFF]/10 rounded-full blur-[100px]" />
+      <svg className="pointer-events-none absolute top-10 right-10 opacity-20" width="120" height="160" viewBox="0 0 24 24" fill="none">
+        <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" fill="#B98CFF" />
+      </svg>
+      <div className="relative z-10 w-full max-w-md">{children}</div>
+    </div>
+  );
+}
+
+function Logo() {
+  return (
+    <div className="flex items-center gap-2 mb-8 justify-center">
+      <div className="w-9 h-9 rounded-xl bg-[#B98CFF] flex items-center justify-center shadow-[0_0_20px_-2px_#B98CFF]">
+        <Zap size={18} className="text-black" fill="black" />
+      </div>
+      <span className="font-bold text-lg text-white tracking-tight" style={{ fontFamily: "Sora, sans-serif" }}>
+        Volt<span className="text-[#B98CFF]">API</span>
+      </span>
+    </div>
+  );
+}
+
+function RegisterScreen({ goLogin, goDashboard }) {
+  const [showPw, setShowPw] = useState(false);
+  return (
+    <AuthShell>
+      <Logo />
+      <div className="bg-[#120C1E]/80 backdrop-blur border border-white/[0.06] rounded-2xl p-8">
+        <h1 className="text-2xl font-bold text-white mb-1" style={{ fontFamily: "Sora, sans-serif" }}>Daftar untuk memulai</h1>
+        <p className="text-sm text-[#9D94B5] mb-6">Buat akun untuk mendapatkan API key gratis kamu.</p>
+
+        <div className="flex flex-col gap-3 mb-5">
+          <LightningButton variant="outline" icon={Github}>Continue with GitHub</LightningButton>
+          <LightningButton variant="outline" onClick={() => {}} className="!pl-0">
+            <span className="flex items-center justify-center gap-2 w-full"><GoogleIcon /> Continue with Google</span>
+          </LightningButton>
+        </div>
+
+        <div className="flex items-center gap-3 mb-5">
+          <div className="flex-1 h-px bg-white/10" />
+          <span className="text-xs text-[#5A5270]">atau dengan email</span>
+          <div className="flex-1 h-px bg-white/10" />
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <FieldLabel>Email</FieldLabel>
+            <TextField icon={Mail} type="email" placeholder="kamu@email.com" />
+          </div>
+          <div>
+            <FieldLabel>Password</FieldLabel>
+            <TextField
+              icon={Lock}
+              type={showPw ? "text" : "password"}
+              placeholder="Minimal 8 karakter"
+              suffix={
+                <button onClick={() => setShowPw(!showPw)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6B6280] hover:text-[#B98CFF]">
+                  {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              }
+            />
+          </div>
+          <div>
+            <FieldLabel>Kode Referral <span className="text-[#5A5270]">(opsional)</span></FieldLabel>
+            <TextField icon={Gift} placeholder="VOLT-XXXXX" />
+          </div>
+
+          <LightningButton onClick={goDashboard} icon={ArrowRight} className="mt-2">Buat Akun</LightningButton>
+        </div>
+
+        <p className="text-center text-sm text-[#9D94B5] mt-6">
+          Sudah punya akun?{" "}
+          <button onClick={goLogin} className="text-[#B98CFF] font-medium hover:underline">Masuk di sini</button>
+        </p>
+      </div>
+      <p className="text-center text-xs text-[#5A5270] mt-6">
+        Dengan mendaftar, kamu menyetujui <span className="text-[#9D94B5]">Syarat Layanan</span> & <span className="text-[#9D94B5]">Kebijakan Privasi</span>.
+      </p>
+    </AuthShell>
+  );
+}
+
+function LoginScreen({ goRegister, goDashboard }) {
+  const [showPw, setShowPw] = useState(false);
+  return (
+    <AuthShell>
+      <Logo />
+      <div className="bg-[#120C1E]/80 backdrop-blur border border-white/[0.06] rounded-2xl p-8">
+        <h1 className="text-2xl font-bold text-white mb-1" style={{ fontFamily: "Sora, sans-serif" }}>Selamat datang kembali</h1>
+        <p className="text-sm text-[#9D94B5] mb-6">Masuk untuk mengakses dashboard API kamu.</p>
+
+        <div className="flex flex-col gap-3 mb-5">
+          <LightningButton variant="outline" icon={Github}>Continue with GitHub</LightningButton>
+          <LightningButton variant="outline">
+            <span className="flex items-center justify-center gap-2 w-full"><GoogleIcon /> Continue with Google</span>
+          </LightningButton>
+        </div>
+
+        <div className="flex items-center gap-3 mb-5">
+          <div className="flex-1 h-px bg-white/10" />
+          <span className="text-xs text-[#5A5270]">atau dengan email</span>
+          <div className="flex-1 h-px bg-white/10" />
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <FieldLabel>Email</FieldLabel>
+            <TextField icon={Mail} type="email" placeholder="kamu@email.com" />
+          </div>
+          <div>
+            <FieldLabel>Password</FieldLabel>
+            <TextField
+              icon={Lock}
+              type={showPw ? "text" : "password"}
+              placeholder="Password kamu"
+              suffix={
+                <button onClick={() => setShowPw(!showPw)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6B6280] hover:text-[#B98CFF]">
+                  {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              }
+            />
+          </div>
+          <div className="flex justify-end">
+            <button className="text-xs text-[#B98CFF] hover:underline">Lupa password?</button>
+          </div>
+          <LightningButton onClick={goDashboard} icon={ArrowRight}>Masuk</LightningButton>
+        </div>
+
+        <p className="text-center text-sm text-[#9D94B5] mt-6">
+          Belum punya akun?{" "}
+          <button onClick={goRegister} className="text-[#B98CFF] font-medium hover:underline">Daftar sekarang</button>
+        </p>
+      </div>
+    </AuthShell>
+  );
+}
+
+/* -------------------------------- DASHBOARD ------------------------------ */
+
+function StatusDot({ live }) {
+  return (
+    <span className="relative flex items-center">
+      <span className={`w-2 h-2 rounded-full ${live ? "bg-[#3DDC97]" : "bg-[#FF5C7A]"}`} />
+      {live && <span className="absolute w-2 h-2 rounded-full bg-[#3DDC97] animate-ping" />}
     </span>
   );
 }
 
-function Card({ children, className = "" }) {
+function StatCard({ icon: Icon, label, value, sub }) {
   return (
-    <div className={`bg-[#13161F] border border-white/5 rounded-2xl ${className}`}>
-      {children}
-    </div>
-  );
-}
-
-function SectionHeader({ title, sub, action }) {
-  return (
-    <div className="flex items-start justify-between mb-5">
-      <div>
-        <h1 className="text-xl font-bold text-[#E7E9F2] tracking-tight" style={{ fontFamily: "Sora, sans-serif" }}>{title}</h1>
-        {sub && <p className="text-sm text-[#8B92A8] mt-1">{sub}</p>}
-      </div>
-      {action}
-    </div>
-  );
-}
-
-function PrimaryButton({ children, icon: Icon, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#7C5CFF] to-[#00E5C7] text-[#0A0C12] font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition"
-    >
-      {Icon && <Icon size={16} />} {children}
-    </button>
-  );
-}
-
-function Toggle({ on, onClick }) {
-  return (
-    <button onClick={onClick} className="text-[#7C5CFF]">
-      {on ? <ToggleRight size={32} /> : <ToggleLeft size={32} className="text-[#8B92A8]" />}
-    </button>
-  );
-}
-
-function Th({ children }) {
-  return <th className="text-left text-xs font-medium text-[#8B92A8] uppercase tracking-wider px-4 py-3">{children}</th>;
-}
-function Td({ children, className = "" }) {
-  return <td className={`px-4 py-3.5 text-sm text-[#E7E9F2] ${className}`}>{children}</td>;
-}
-
-function Table({ headers, rows }) {
-  return (
-    <Card className="overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-white/[0.02] border-b border-white/5">
-            <tr>{headers.map((h) => <Th key={h}>{h}</Th>)}</tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">{rows}</tbody>
-        </table>
-      </div>
-    </Card>
-  );
-}
-
-function FieldRow({ label, children }) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-center py-3 border-b border-white/5 last:border-0">
-      <label className="text-sm text-[#8B92A8]">{label}</label>
-      <div className="md:col-span-2">{children}</div>
-    </div>
-  );
-}
-
-function Input({ ...props }) {
-  return (
-    <input
-      {...props}
-      className="w-full bg-[#0E1118] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#E7E9F2] placeholder:text-[#5A6076] focus:outline-none focus:ring-2 focus:ring-[#7C5CFF]/50 focus:border-[#7C5CFF]"
-    />
-  );
-}
-
-/* ---------------------------------- PAGES ---------------------------------- */
-
-function Dashboard() {
-  const stats = [
-    { label: "Pendapatan Hari Ini", value: "Rp4.820.000", delta: "+12.4%", up: true, icon: TrendingUp },
-    { label: "Transaksi Hari Ini", value: "231", delta: "+8.1%", up: true, icon: ShoppingCart },
-    { label: "Saldo Deposit Aktif", value: "Rp18.250.000", delta: "-2.3%", up: false, icon: Wallet },
-    { label: "Pengguna Baru", value: "47", delta: "+19.0%", up: true, icon: Users },
-  ];
-  return (
-    <div>
-      <SectionHeader title="Dashboard" sub="Ringkasan performa toko top up hari ini" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {stats.map((s) => (
-          <Card key={s.label} className="p-5">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#7C5CFF]/20 to-[#00E5C7]/20 flex items-center justify-center">
-                <s.icon size={18} className="text-[#00E5C7]" />
-              </div>
-              <span className={`inline-flex items-center gap-0.5 text-xs font-medium ${s.up ? "text-[#00E5C7]" : "text-[#FF4D6A]"}`}>
-                {s.up ? <ArrowUpRight size={13} /> : <ArrowDownRight size={13} />}{s.delta}
-              </span>
-            </div>
-            <div className="text-2xl font-bold text-[#E7E9F2]" style={{ fontFamily: "Sora, sans-serif" }}>{s.value}</div>
-            <div className="text-xs text-[#8B92A8] mt-1">{s.label}</div>
-          </Card>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="p-5 lg:col-span-2">
-          <h3 className="text-sm font-semibold text-[#E7E9F2] mb-4">Transaksi Terbaru</h3>
-          <div className="space-y-3">
-            {ORDERS.slice(0, 4).map((o) => (
-              <div key={o.id} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className={`w-2 h-2 rounded-full ${o.status === "sukses" ? "bg-[#00E5C7] shadow-[0_0_8px_#00E5C7]" : o.status === "gagal" ? "bg-[#FF4D6A]" : "bg-[#FFB020]"}`} />
-                  <div>
-                    <div className="text-sm text-[#E7E9F2] font-medium">{o.produk}</div>
-                    <div className="text-xs text-[#8B92A8] font-mono">{o.id} · {o.user}</div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm text-[#E7E9F2] font-mono">{fmt(o.harga)}</div>
-                  <StatusPill status={o.status} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        <Card className="p-5">
-          <h3 className="text-sm font-semibold text-[#E7E9F2] mb-4">Provider Aktif</h3>
-          <div className="space-y-3">
-            {["Digiflazz", "VIP Payment", "Api Games"].map((p, i) => (
-              <div key={p} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                <div className="flex items-center gap-2">
-                  <Zap size={14} className="text-[#7C5CFF]" />
-                  <span className="text-sm text-[#E7E9F2]">{p}</span>
-                </div>
-                <span className="text-xs text-[#00E5C7] flex items-center gap-1"><Power size={11}/> aktif</span>
-              </div>
-            ))}
-          </div>
-        </Card>
-      </div>
-    </div>
-  );
-}
-
-function Pesanan() {
-  return (
-    <div>
-      <SectionHeader title="Pesanan" sub="Semua transaksi top up dari pelanggan" action={<PrimaryButton icon={Search}>Cari Order</PrimaryButton>} />
-      <Table
-        headers={["ID Transaksi", "Produk", "User", "Provider", "Harga", "Waktu", "Status"]}
-        rows={ORDERS.map((o) => (
-          <tr key={o.id} className="hover:bg-white/[0.02]">
-            <Td className="font-mono text-[#00E5C7]">{o.id}</Td>
-            <Td>{o.produk}</Td>
-            <Td className="text-[#8B92A8]">{o.user}</Td>
-            <Td className="text-[#8B92A8]">{o.provider}</Td>
-            <Td className="font-mono">{fmt(o.harga)}</Td>
-            <Td className="text-[#8B92A8]">{o.waktu}</Td>
-            <Td><StatusPill status={o.status} /></Td>
-          </tr>
-        ))}
-      />
-    </div>
-  );
-}
-
-function Deposit() {
-  return (
-    <div>
-      <SectionHeader title="Deposit" sub="Riwayat top up saldo dari reseller & pengguna" />
-      <Table
-        headers={["ID Deposit", "User", "Metode", "Jumlah", "Waktu", "Status"]}
-        rows={DEPOSITS.map((d) => (
-          <tr key={d.id} className="hover:bg-white/[0.02]">
-            <Td className="font-mono text-[#00E5C7]">{d.id}</Td>
-            <Td>{d.user}</Td>
-            <Td className="text-[#8B92A8]">{d.metode}</Td>
-            <Td className="font-mono">{fmt(d.jumlah)}</Td>
-            <Td className="text-[#8B92A8]">{d.waktu}</Td>
-            <Td><StatusPill status={d.status} /></Td>
-          </tr>
-        ))}
-      />
-    </div>
-  );
-}
-
-function ManualOrder() {
-  return (
-    <div>
-      <SectionHeader title="Proses Orderan Manual" sub="Order yang butuh validasi ID atau input manual oleh admin" />
-      <Table
-        headers={["ID Transaksi", "Produk", "User", "ID Game", "Catatan", "Aksi"]}
-        rows={[
-          { id: "TRX17699", produk: "Joki Rank Mobile Legends", user: "bayu.s", idgame: "8839201 (2201)", catatan: "Akun perlu OTP manual" },
-          { id: "TRX17688", produk: "Top Up Server Khusus", user: "vega_x", idgame: "ID tidak terdeteksi", catatan: "Validasi otomatis gagal" },
-        ].map((r) => (
-          <tr key={r.id} className="hover:bg-white/[0.02]">
-            <Td className="font-mono text-[#00E5C7]">{r.id}</Td>
-            <Td>{r.produk}</Td>
-            <Td className="text-[#8B92A8]">{r.user}</Td>
-            <Td className="font-mono text-xs text-[#8B92A8]">{r.idgame}</Td>
-            <Td className="text-[#FFB020] text-xs">{r.catatan}</Td>
-            <Td>
-              <div className="flex gap-2">
-                <button className="px-3 py-1.5 rounded-lg bg-[#00E5C7]/10 text-[#00E5C7] text-xs font-medium">Selesaikan</button>
-                <button className="px-3 py-1.5 rounded-lg bg-[#FF4D6A]/10 text-[#FF4D6A] text-xs font-medium">Tolak</button>
-              </div>
-            </Td>
-          </tr>
-        ))}
-      />
-    </div>
-  );
-}
-
-function MutasiSetting({ title, brand }) {
-  return (
-    <div>
-      <SectionHeader title={`Pengaturan Cek Mutasi ${brand}`} sub={`Hubungkan akun ${brand} untuk validasi pembayaran otomatis`} />
-      <Card className="p-6 max-w-2xl">
-        <div className="flex items-center justify-between pb-4 mb-2 border-b border-white/5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#7C5CFF] to-[#00E5C7] flex items-center justify-center text-[#0A0C12] font-bold">{brand[0]}</div>
-            <div>
-              <div className="text-sm font-semibold text-[#E7E9F2]">{brand}</div>
-              <div className="text-xs text-[#8B92A8]">Status koneksi: <span className="text-[#00E5C7]">terhubung</span></div>
-            </div>
-          </div>
-          <Toggle on />
+    <div className="bg-[#120C1E] border border-white/[0.06] rounded-2xl p-5">
+      <div className="flex items-center justify-between mb-3">
+        <div className="w-9 h-9 rounded-lg bg-[#B98CFF]/10 flex items-center justify-center">
+          <Icon size={17} className="text-[#B98CFF]" />
         </div>
-        <FieldRow label="Nomor Telepon"><Input defaultValue="0812xxxxxxx" /></FieldRow>
-        <FieldRow label="Token / Auth Key"><Input type="password" defaultValue="••••••••••••" /></FieldRow>
-        <FieldRow label="Interval Cek Mutasi"><Input defaultValue="15 detik" /></FieldRow>
-        <FieldRow label="Auto Konfirmasi Pembayaran"><Toggle on /></FieldRow>
-        <div className="mt-5">
-          <PrimaryButton icon={CheckCircle2}>Simpan Pengaturan</PrimaryButton>
-        </div>
-      </Card>
-    </div>
-  );
-}
-
-function SliderSetting() {
-  const slides = [
-    { id: 1, judul: "Promo Diamond Mobile Legends", aktif: true },
-    { id: 2, judul: "Flash Sale Akhir Bulan", aktif: true },
-    { id: 3, judul: "Cashback Member Gold", aktif: false },
-  ];
-  return (
-    <div>
-      <SectionHeader title="Pengaturan Iklan Slider" sub="Banner promosi yang tampil di halaman utama" action={<PrimaryButton icon={Plus}>Tambah Slider</PrimaryButton>} />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {slides.map((s) => (
-          <Card key={s.id} className="overflow-hidden">
-            <div className="h-32 bg-gradient-to-br from-[#7C5CFF]/30 via-[#13161F] to-[#00E5C7]/20 flex items-center justify-center">
-              <ImageIcon size={28} className="text-[#8B92A8]" />
-            </div>
-            <div className="p-4">
-              <div className="text-sm font-medium text-[#E7E9F2] mb-2">{s.judul}</div>
-              <div className="flex items-center justify-between">
-                <StatusPill status={s.aktif ? "tersedia" : "habis"} />
-                <div className="flex gap-2 text-[#8B92A8]">
-                  <Pencil size={15} className="cursor-pointer hover:text-[#00E5C7]" />
-                  <Trash2 size={15} className="cursor-pointer hover:text-[#FF4D6A]" />
-                </div>
-              </div>
-            </div>
-          </Card>
-        ))}
       </div>
+      <div className="text-2xl font-bold text-white" style={{ fontFamily: "Sora, sans-serif" }}>{value}</div>
+      <div className="text-xs text-[#9D94B5] mt-1">{label}</div>
+      {sub && <div className="text-[11px] text-[#3DDC97] mt-1">{sub}</div>}
     </div>
   );
 }
 
-function PaymentSetting() {
-  const methods = [
-    { nama: "QRIS (Tripay)", tipe: "Otomatis", fee: "0.7%", aktif: true },
-    { nama: "OVO", tipe: "Otomatis", fee: "Rp0", aktif: true },
-    { nama: "Gopay", tipe: "Otomatis", fee: "Rp0", aktif: true },
-    { nama: "Transfer Bank Manual", tipe: "Manual", fee: "Rp0", aktif: false },
-  ];
-  return (
-    <div>
-      <SectionHeader title="Pengaturan Metode Pembayaran" sub="Atur channel pembayaran otomatis & manual" action={<PrimaryButton icon={Plus}>Tambah Metode</PrimaryButton>} />
-      <Table
-        headers={["Metode", "Tipe", "Fee", "Status", ""]}
-        rows={methods.map((m) => (
-          <tr key={m.nama} className="hover:bg-white/[0.02]">
-            <Td className="font-medium">{m.nama}</Td>
-            <Td className="text-[#8B92A8]">{m.tipe}</Td>
-            <Td className="font-mono text-[#8B92A8]">{m.fee}</Td>
-            <Td><StatusPill status={m.aktif ? "tersedia" : "habis"} /></Td>
-            <Td><Toggle on={m.aktif} /></Td>
-          </tr>
-        ))}
-      />
-    </div>
-  );
-}
+const ENDPOINTS = [
+  { method: "GET", path: "/v1/status", desc: "Cek status server realtime", code: 200, ms: 42 },
+  { method: "POST", path: "/v1/orders", desc: "Buat order baru", code: 201, ms: 118 },
+  { method: "GET", path: "/v1/orders/:id", desc: "Cek status order", code: 200, ms: 64 },
+  { method: "POST", path: "/v1/deposits", desc: "Buat permintaan deposit", code: 201, ms: 95 },
+  { method: "GET", path: "/v1/products", desc: "Daftar produk tersedia", code: 200, ms: 51 },
+];
 
-function ProfilWeb() {
-  return (
-    <div>
-      <SectionHeader title="Pengaturan Profil Web" sub="Identitas dan informasi umum website" />
-      <Card className="p-6 max-w-2xl">
-        <FieldRow label="Nama Website"><Input defaultValue="ChargeUp Store" /></FieldRow>
-        <FieldRow label="Tagline"><Input defaultValue="Top up cepat, harga gamer" /></FieldRow>
-        <FieldRow label="Nomor WhatsApp CS"><Input defaultValue="0812xxxxxxx" /></FieldRow>
-        <FieldRow label="Email Support"><Input defaultValue="support@chargeup.id" /></FieldRow>
-        <FieldRow label="Logo"><Input type="text" placeholder="Unggah file logo..." /></FieldRow>
-        <FieldRow label="Maintenance Mode"><Toggle /></FieldRow>
-        <div className="mt-5">
-          <PrimaryButton icon={CheckCircle2}>Simpan Perubahan</PrimaryButton>
-        </div>
-      </Card>
-    </div>
-  );
-}
+const LOGS = [
+  { t: "09:42:11", ep: "POST /v1/orders", code: 201, ip: "103.21.x.x", ms: 112 },
+  { t: "09:41:55", ep: "GET /v1/products", code: 200, ip: "182.4.x.x", ms: 48 },
+  { t: "09:41:30", ep: "GET /v1/orders/TRX1872", code: 200, ms: 60, ip: "103.21.x.x" },
+  { t: "09:40:58", ep: "POST /v1/deposits", code: 429, ip: "44.5.x.x", ms: 5 },
+];
 
-function KategoriProduk() {
-  const kategori = ["Mobile Legends", "Free Fire", "PUBG Mobile", "Genshin Impact", "Valorant", "Joki ML"];
-  return (
-    <div>
-      <SectionHeader title="Pengaturan Kategori Produk" sub="Kelompok produk berdasarkan game" action={<PrimaryButton icon={Plus}>Tambah Kategori</PrimaryButton>} />
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-        {kategori.map((k) => (
-          <Card key={k} className="p-4 flex items-center justify-between">
-            <span className="text-sm text-[#E7E9F2]">{k}</span>
-            <div className="flex gap-2 text-[#8B92A8]">
-              <Pencil size={14} className="cursor-pointer hover:text-[#00E5C7]" />
-              <Trash2 size={14} className="cursor-pointer hover:text-[#FF4D6A]" />
-            </div>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-}
+function Dashboard({ logout }) {
+  const [copied, setCopied] = useState(false);
+  const [apiKey, setApiKey] = useState("volt_live_8f2k9s7d6h3j1q0w5e4r3t2y1u");
+  const [revealed, setRevealed] = useState(false);
 
-function ProdukSetting() {
-  return (
-    <div>
-      <SectionHeader title="Pengaturan Produk" sub="Kelola daftar layanan top up dan markup harga" action={<PrimaryButton icon={Plus}>Tambah Produk</PrimaryButton>} />
-      <Table
-        headers={["ID", "Nama Produk", "Kategori", "Modal", "Harga Jual", "Stok", ""]}
-        rows={PRODUCTS.map((p) => (
-          <tr key={p.id} className="hover:bg-white/[0.02]">
-            <Td className="font-mono text-[#00E5C7]">{p.id}</Td>
-            <Td>{p.nama}</Td>
-            <Td className="text-[#8B92A8]">{p.kategori}</Td>
-            <Td className="font-mono text-[#8B92A8]">{fmt(p.modal)}</Td>
-            <Td className="font-mono">{fmt(p.harga)}</Td>
-            <Td><StatusPill status={p.stok} /></Td>
-            <Td>
-              <div className="flex gap-2 text-[#8B92A8]">
-                <Pencil size={14} className="cursor-pointer hover:text-[#00E5C7]" />
-                <Trash2 size={14} className="cursor-pointer hover:text-[#FF4D6A]" />
-              </div>
-            </Td>
-          </tr>
-        ))}
-      />
-    </div>
-  );
-}
-
-function VoucherSetting() {
-  return (
-    <div>
-      <SectionHeader title="Pengaturan Voucher Diskon" sub="Kode promo yang bisa dipakai pelanggan" action={<PrimaryButton icon={Plus}>Buat Voucher</PrimaryButton>} />
-      <Table
-        headers={["Kode", "Diskon", "Min. Transaksi", "Sisa Kuota", "Status", ""]}
-        rows={VOUCHERS.map((v) => (
-          <tr key={v.kode} className="hover:bg-white/[0.02]">
-            <Td className="font-mono text-[#7C5CFF]">{v.kode}</Td>
-            <Td>{v.diskon}</Td>
-            <Td className="font-mono text-[#8B92A8]">{fmt(v.min)}</Td>
-            <Td>{v.kuota}</Td>
-            <Td><StatusPill status={v.aktif ? "tersedia" : "habis"} /></Td>
-            <Td><Toggle on={v.aktif} /></Td>
-          </tr>
-        ))}
-      />
-    </div>
-  );
-}
-
-function PenggunaSetting() {
-  const levelColor = { Member: "text-[#8B92A8]", Gold: "text-[#FFB020]", Platinum: "text-[#00E5C7]", Guest: "text-[#5A6076]" };
-  return (
-    <div>
-      <SectionHeader title="Kelola Pengguna" sub="4 level member: Guest, Member, Gold, Platinum" />
-      <Table
-        headers={["Username", "Level", "Saldo", "Total Transaksi", "Bergabung", ""]}
-        rows={USERS.map((u) => (
-          <tr key={u.nama} className="hover:bg-white/[0.02]">
-            <Td className="font-medium">{u.nama}</Td>
-            <Td><span className={`font-semibold text-xs ${levelColor[u.level]}`}>{u.level}</span></Td>
-            <Td className="font-mono">{fmt(u.saldo)}</Td>
-            <Td className="text-[#8B92A8]">{u.transaksi}</Td>
-            <Td className="text-[#8B92A8]">{u.join}</Td>
-            <Td><button className="text-xs px-3 py-1.5 rounded-lg bg-[#7C5CFF]/10 text-[#7C5CFF] font-medium">Ubah Level</button></Td>
-          </tr>
-        ))}
-      />
-    </div>
-  );
-}
-
-function JokiSetting() {
-  return (
-    <div>
-      <SectionHeader title="Kelola Jasa Joki ML" sub="Pesanan joki rank Mobile Legends" action={<PrimaryButton icon={Plus}>Tambah Layanan Joki</PrimaryButton>} />
-      <Table
-        headers={["ID", "User", "Target Rank", "Harga", "Joki Bertugas", "Status"]}
-        rows={JOKI.map((j) => (
-          <tr key={j.id} className="hover:bg-white/[0.02]">
-            <Td className="font-mono text-[#00E5C7]">{j.id}</Td>
-            <Td>{j.user}</Td>
-            <Td className="text-[#8B92A8]">{j.rank}</Td>
-            <Td className="font-mono">{fmt(j.harga)}</Td>
-            <Td className="text-[#8B92A8]">{j.joki}</Td>
-            <Td><StatusPill status={j.status} /></Td>
-          </tr>
-        ))}
-      />
-    </div>
-  );
-}
-
-/* --------------------------------- SHELL --------------------------------- */
-
-const PAGES = {
-  dashboard: Dashboard,
-  pesanan: Pesanan,
-  deposit: Deposit,
-  manual: ManualOrder,
-  ovo: () => <MutasiSetting brand="OVO" />,
-  gopay: () => <MutasiSetting brand="Gopay" />,
-  slider: SliderSetting,
-  payment: PaymentSetting,
-  profil: ProfilWeb,
-  kategori: KategoriProduk,
-  produk: ProdukSetting,
-  voucher: VoucherSetting,
-  pengguna: PenggunaSetting,
-  joki: JokiSetting,
-};
-
-export default function AdminPanel() {
-  const [active, setActive] = useState("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const Page = PAGES[active] || Dashboard;
+  const copy = () => {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+  const regenerate = () => {
+    setApiKey("volt_live_" + Math.random().toString(36).slice(2, 28));
+  };
+  const masked = "volt_live_" + "•".repeat(26);
 
   return (
-    <div className="min-h-screen bg-[#0A0C12] text-[#E7E9F2]" style={{ fontFamily: "Inter, sans-serif" }}>
-      <div className="flex">
-        {/* Sidebar */}
-        <aside className={`fixed lg:sticky top-0 h-screen bg-[#0D1019] border-r border-white/5 transition-all z-20 ${sidebarOpen ? "w-64" : "w-0 lg:w-20 overflow-hidden"}`}>
-          <div className="h-16 flex items-center gap-2 px-5 border-b border-white/5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#7C5CFF] to-[#00E5C7] flex items-center justify-center">
-              <Zap size={16} className="text-[#0A0C12]" />
-            </div>
-            {sidebarOpen && <span className="font-bold text-sm tracking-tight" style={{ fontFamily: "Sora, sans-serif" }}>ChargeUp<span className="text-[#00E5C7]">Admin</span></span>}
+    <div className="min-h-screen bg-[#0A0710] text-[#E9E4F5]" style={{ fontFamily: "Inter, sans-serif" }}>
+      {/* Topbar */}
+      <header className="sticky top-0 z-10 bg-[#0A0710]/90 backdrop-blur border-b border-white/[0.06] flex items-center justify-between px-6 h-16">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-[#B98CFF] flex items-center justify-center shadow-[0_0_16px_-2px_#B98CFF]">
+            <Zap size={15} className="text-black" fill="black" />
           </div>
-          <nav className="py-4 px-3 overflow-y-auto" style={{ height: "calc(100vh - 4rem)" }}>
-            {NAV.map((g) => (
-              <div key={g.group} className="mb-5">
-                {sidebarOpen && <div className="text-[10px] font-semibold uppercase tracking-wider text-[#5A6076] px-3 mb-2">{g.group}</div>}
-                {g.items.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = active === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => setActive(item.id)}
-                      className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm mb-0.5 transition ${
-                        isActive ? "bg-white/5 text-[#E7E9F2]" : "text-[#8B92A8] hover:bg-white/[0.03] hover:text-[#E7E9F2]"
-                      }`}
-                    >
-                      {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-full bg-gradient-to-b from-[#7C5CFF] to-[#00E5C7] shadow-[0_0_8px_#7C5CFF]" />}
-                      <Icon size={17} className={isActive ? "text-[#00E5C7]" : ""} />
-                      {sidebarOpen && <span className="truncate">{item.label}</span>}
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
-          </nav>
-        </aside>
+          <span className="font-bold text-white" style={{ fontFamily: "Sora, sans-serif" }}>Volt<span className="text-[#B98CFF]">API</span></span>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2 bg-[#120C1E] border border-white/[0.06] rounded-full px-3 py-1.5">
+            <StatusDot live />
+            <span className="text-xs text-[#9D94B5]">Server Realtime: <span className="text-[#3DDC97] font-medium">Online</span></span>
+          </div>
+          <button className="text-[#9D94B5] hover:text-white"><Bell size={18} /></button>
+          <button className="text-[#9D94B5] hover:text-white"><Settings size={18} /></button>
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#B98CFF] to-[#7C3AED] flex items-center justify-center text-xs font-bold text-black">A</div>
+          <button onClick={logout} className="text-[#9D94B5] hover:text-[#FF5C7A]"><LogOut size={17} /></button>
+        </div>
+      </header>
 
-        {/* Main */}
-        <div className="flex-1 min-w-0">
-          {/* Topbar */}
-          <header className="h-16 sticky top-0 z-10 bg-[#0A0C12]/90 backdrop-blur border-b border-white/5 flex items-center justify-between px-6">
-            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-[#8B92A8] hover:text-[#E7E9F2] lg:hidden">
-              <LayoutDashboard size={20} />
-            </button>
-            <div className="hidden md:flex items-center gap-2 bg-[#13161F] border border-white/5 rounded-xl px-3 py-2 w-80">
-              <Search size={15} className="text-[#5A6076]" />
-              <input placeholder="Cari transaksi, user, produk..." className="bg-transparent text-sm outline-none placeholder:text-[#5A6076] w-full" />
-            </div>
-            <div className="flex items-center gap-4">
-              <button className="relative text-[#8B92A8] hover:text-[#E7E9F2]">
-                <Bell size={19} />
-                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#FF4D6A]" />
+      <main className="p-6 max-w-6xl mx-auto">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-white" style={{ fontFamily: "Sora, sans-serif" }}>Dashboard</h1>
+          <p className="text-sm text-[#9D94B5] mt-1">Kelola API key, pantau penggunaan, dan cek status server secara realtime.</p>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <StatCard icon={Activity} label="Request Hari Ini" value="4,218" sub="+12% dari kemarin" />
+          <StatCard icon={Server} label="Uptime Server" value="99.98%" sub="30 hari terakhir" />
+          <StatCard icon={Clock} label="Rata-rata Latensi" value="64ms" />
+          <StatCard icon={ShieldCheck} label="Rate Limit" value="1,000/menit" />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          {/* API Key Card */}
+          <div className="lg:col-span-2 bg-[#120C1E] border border-white/[0.06] rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Key size={16} className="text-[#B98CFF]" />
+                <h3 className="text-sm font-semibold text-white">API Key Kamu</h3>
+              </div>
+              <button onClick={regenerate} className="flex items-center gap-1.5 text-xs text-[#B98CFF] hover:text-[#C9A6FF]">
+                <RefreshCw size={13} /> Generate Ulang
               </button>
-              <div className="flex items-center gap-2 cursor-pointer">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#7C5CFF] to-[#00E5C7] flex items-center justify-center text-xs font-bold text-[#0A0C12]">A</div>
-                <span className="text-sm hidden sm:block">Admin</span>
-                <ChevronDown size={14} className="text-[#8B92A8] hidden sm:block" />
-              </div>
             </div>
-          </header>
+            <div className="flex items-center gap-2 bg-[#0E0816] border border-white/10 rounded-xl px-4 py-3 mb-4">
+              <code className="flex-1 text-sm text-[#C9A6FF] font-mono truncate">{revealed ? apiKey : masked}</code>
+              <button onClick={() => setRevealed(!revealed)} className="text-[#6B6280] hover:text-white">
+                {revealed ? <EyeOff size={15} /> : <Eye size={15} />}
+              </button>
+              <button onClick={copy} className="text-[#6B6280] hover:text-white">
+                {copied ? <Check size={15} className="text-[#3DDC97]" /> : <Copy size={15} />}
+              </button>
+            </div>
+            <div className="flex items-center gap-2 mb-1">
+              <Globe size={14} className="text-[#6B6280]" />
+              <span className="text-xs text-[#9D94B5]">Base URL</span>
+            </div>
+            <div className="flex items-center gap-2 bg-[#0E0816] border border-white/10 rounded-xl px-4 py-3">
+              <code className="flex-1 text-sm text-[#E9E4F5] font-mono">https://api.voltapi.dev</code>
+              <button className="text-[#6B6280] hover:text-white"><Copy size={15} /></button>
+            </div>
+            <div className="flex items-center gap-2 mt-4 text-xs text-[#9D94B5]">
+              <AlertCircle size={13} className="text-[#FFB020]" />
+              Jangan bagikan API key ini di kode publik atau frontend.
+            </div>
+          </div>
 
-          <main className="p-6">
-            <Page />
-          </main>
+          {/* Realtime status */}
+          <div className="bg-[#120C1E] border border-white/[0.06] rounded-2xl p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Wifi size={16} className="text-[#3DDC97]" />
+              <h3 className="text-sm font-semibold text-white">Status Server</h3>
+            </div>
+            <div className="space-y-3">
+              {[
+                { n: "API Gateway", s: true },
+                { n: "WebSocket Realtime", s: true },
+                { n: "Provider Digiflazz", s: true },
+                { n: "Cek Mutasi OVO/Gopay", s: false },
+              ].map((s) => (
+                <div key={s.n} className="flex items-center justify-between">
+                  <span className="text-sm text-[#C9C3D9]">{s.n}</span>
+                  <span className={`flex items-center gap-1.5 text-xs ${s.s ? "text-[#3DDC97]" : "text-[#FF5C7A]"}`}>
+                    <StatusDot live={s.s} /> {s.s ? "normal" : "gangguan"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+
+        {/* Endpoints */}
+        <div className="bg-[#120C1E] border border-white/[0.06] rounded-2xl p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <BarChart3 size={16} className="text-[#B98CFF]" />
+            <h3 className="text-sm font-semibold text-white">Endpoint Tersedia</h3>
+          </div>
+          <div className="space-y-2">
+            {ENDPOINTS.map((e) => (
+              <div key={e.path} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.02]">
+                <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold w-14 text-center ${
+                  e.method === "GET" ? "bg-[#3DDC97]/10 text-[#3DDC97]" : "bg-[#B98CFF]/10 text-[#B98CFF]"
+                }`}>{e.method}</span>
+                <code className="text-sm text-[#E9E4F5] font-mono flex-1">{e.path}</code>
+                <span className="text-xs text-[#6B6280] hidden sm:block">{e.desc}</span>
+                <span className="text-xs text-[#3DDC97] font-mono">{e.code}</span>
+                <span className="text-xs text-[#6B6280] font-mono w-12 text-right">{e.ms}ms</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Logs */}
+        <div className="bg-[#120C1E] border border-white/[0.06] rounded-2xl p-6">
+          <h3 className="text-sm font-semibold text-white mb-4">Log Request Terbaru</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs text-[#6B6280] uppercase">
+                  <th className="pb-2 font-medium">Waktu</th>
+                  <th className="pb-2 font-medium">Endpoint</th>
+                  <th className="pb-2 font-medium">IP</th>
+                  <th className="pb-2 font-medium">Status</th>
+                  <th className="pb-2 font-medium text-right">Latensi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {LOGS.map((l, i) => (
+                  <tr key={i}>
+                    <td className="py-2.5 text-[#9D94B5] font-mono text-xs">{l.t}</td>
+                    <td className="py-2.5 font-mono text-[#E9E4F5]">{l.ep}</td>
+                    <td className="py-2.5 text-[#6B6280] font-mono text-xs">{l.ip}</td>
+                    <td className={`py-2.5 font-mono text-xs ${l.code < 300 ? "text-[#3DDC97]" : "text-[#FF5C7A]"}`}>{l.code}</td>
+                    <td className="py-2.5 text-right text-[#6B6280] font-mono text-xs">{l.ms}ms</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
     </div>
   );
+}
+
+/* ---------------------------------- ROOT --------------------------------- */
+
+export default function App() {
+  const [screen, setScreen] = useState("register"); // register | login | dashboard
+
+  if (screen === "dashboard") return <Dashboard logout={() => setScreen("login")} />;
+  if (screen === "login") return <LoginScreen goRegister={() => setScreen("register")} goDashboard={() => setScreen("dashboard")} />;
+  return <RegisterScreen goLogin={() => setScreen("login")} goDashboard={() => setScreen("dashboard")} />;
 }
