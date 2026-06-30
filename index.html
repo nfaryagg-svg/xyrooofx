@@ -1,411 +1,615 @@
-import React, { useState } from "react";
-import {
-  Zap, Github, Mail, Lock, Eye, EyeOff, Gift, ArrowRight, Copy, Check,
-  RefreshCw, Activity, Server, Key, Globe, BarChart3, Clock, ShieldCheck,
-  ChevronDown, Bell, Settings, LogOut, Plus, Trash2, AlertCircle, Wifi
-} from "lucide-react";
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heyyarya Trader Gold</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* ------------------------------- helper UI ------------------------------- */
+  :root{
+    --bg: #000000;
+    --panel: #0a0c12;
+    --panel-2: #0e1118;
+    --line: #1c2230;
+    --blue: #3a8dff;
+    --blue-bright: #6fb8ff;
+    --blue-dim: #1d4d8a;
+    --text: #e8edf5;
+    --text-dim: #6f7a8c;
+    --red: #d4607a;
+  }
 
-function GoogleIcon({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48">
-      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/>
-      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 16 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 7.1 29.6 5 24 5c-7.7 0-14.3 4.4-17.7 9.7z"/>
-      <path fill="#4CAF50" d="M24 44c5.5 0 10.4-1.8 14-5l-6.5-5.3C29.6 35.4 26.9 36 24 36c-5.3 0-9.7-3.1-11.3-7.6l-6.6 5.1C9.6 39.5 16.2 44 24 44z"/>
-      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1 2.8-3 5.2-5.6 6.7l6.5 5.3C39.8 37.4 44 31.6 44 24c0-1.3-.1-2.7-.4-3.5z"/>
-    </svg>
-  );
-}
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html, body{ height:100%; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    overflow-x: hidden;
+  }
 
-function LightningButton({ children, onClick, variant = "primary", className = "", icon: Icon, type = "button" }) {
-  const base = "relative w-full flex items-center justify-center gap-2 font-semibold text-sm rounded-xl px-4 py-3 transition active:scale-[0.98]";
-  const styles = {
-    primary: "text-black bg-[#B98CFF] hover:bg-[#C9A6FF] shadow-[0_0_24px_-4px_#B98CFF]",
-    outline: "text-[#E9E4F5] bg-white/[0.03] border border-white/10 hover:border-[#B98CFF]/50 hover:bg-white/[0.05]",
-    ghost: "text-[#9D94B5] hover:text-[#E9E4F5]",
-  };
-  return (
-    <button type={type} onClick={onClick} className={`${base} ${styles[variant]} ${className}`}>
-      {Icon && <Icon size={17} />}{children}
-    </button>
-  );
-}
+  /* ===== Lightning canvas background ===== */
+  #bgCanvas{
+    position: fixed;
+    inset: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    background: radial-gradient(ellipse at 50% 0%, #050810 0%, #000000 70%);
+  }
 
-function FieldLabel({ children }) {
-  return <label className="text-xs font-medium text-[#9D94B5] mb-1.5 block">{children}</label>;
-}
+  .app{
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+  }
 
-function TextField({ icon: Icon, type = "text", placeholder, value, onChange, suffix }) {
-  return (
-    <div className="relative">
-      {Icon && <Icon size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6B6280]" />}
-      <input
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        className={`w-full bg-[#15111F] border border-white/10 rounded-xl py-3 text-sm text-[#E9E4F5] placeholder:text-[#5A5270] focus:outline-none focus:ring-2 focus:ring-[#B98CFF]/40 focus:border-[#B98CFF]/60 ${Icon ? "pl-10" : "pl-3.5"} ${suffix ? "pr-10" : "pr-3.5"}`}
-      />
-      {suffix}
-    </div>
-  );
-}
+  /* ===== Shared ===== */
+  .hidden{ display:none !important; }
+  ::selection{ background: var(--blue-dim); color:#fff; }
 
-/* ----------------------------- AUTH SCREENS ----------------------------- */
+  /* ===== Auth screen ===== */
+  .auth-screen{
+    min-height: 100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+  }
+  .auth-box{
+    width: 100%;
+    max-width: 400px;
+    background: rgba(10,12,18,0.7);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(14px);
+    padding: 38px 32px;
+    box-shadow: 0 0 60px rgba(58,141,255,0.06), inset 0 0 0 1px rgba(58,141,255,0.04);
+    position: relative;
+  }
+  .auth-box::before{
+    content:'';
+    position:absolute; top:-1px; left:-1px; right:-1px; height:2px;
+    background: linear-gradient(90deg, transparent, var(--blue-bright), transparent);
+    animation: scanline 3s linear infinite;
+  }
+  @keyframes scanline{
+    0%{ transform: translateX(-100%); opacity:0; }
+    50%{ opacity:1; }
+    100%{ transform: translateX(100%); opacity:0; }
+  }
 
-function AuthShell({ children }) {
-  return (
-    <div className="min-h-screen bg-[#0A0710] relative flex items-center justify-center px-4 py-10 overflow-hidden">
-      {/* lightning glow backdrop */}
-      <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#7C3AED]/20 rounded-full blur-[120px]" />
-      <div className="pointer-events-none absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#B98CFF]/10 rounded-full blur-[100px]" />
-      <svg className="pointer-events-none absolute top-10 right-10 opacity-20" width="120" height="160" viewBox="0 0 24 24" fill="none">
-        <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" fill="#B98CFF" />
-      </svg>
-      <div className="relative z-10 w-full max-w-md">{children}</div>
-    </div>
-  );
-}
+  .auth-logo{
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    margin-bottom: 28px;
+  }
+  .auth-welcome{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--blue-bright);
+    border: 1px solid var(--blue-dim);
+    padding: 7px 16px;
+    box-shadow: 0 0 18px rgba(58,141,255,0.2);
+    margin-bottom: 4px;
+  }
+  .auth-logo h1{
+    font-family:'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--text);
+    text-align:center;
+  }
+  .auth-logo p{
+    font-size: 10.5px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--blue-dim);
+  }
 
-function Logo() {
-  return (
-    <div className="flex items-center gap-2 mb-8 justify-center">
-      <div className="w-9 h-9 rounded-xl bg-[#B98CFF] flex items-center justify-center shadow-[0_0_20px_-2px_#B98CFF]">
-        <Zap size={18} className="text-black" fill="black" />
+  .auth-tabs{
+    display:flex;
+    border: 1px solid var(--line);
+    margin-bottom: 24px;
+  }
+  .auth-tab{
+    flex:1;
+    text-align:center;
+    padding: 11px;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-dim);
+    cursor:pointer;
+    background: transparent;
+    border:none;
+    font-family: inherit;
+    transition: color .2s, background .2s;
+  }
+  .auth-tab.active{
+    color: #000;
+    background: var(--blue);
+  }
+
+  .field{ margin-bottom: 16px; }
+  .field label{
+    display:block;
+    font-size: 10.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--blue-dim);
+    margin-bottom: 7px;
+  }
+  .field input{
+    width:100%;
+    background: #05070b;
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 12px 13px;
+    font-size: 13.5px;
+    font-family: inherit;
+    outline:none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .field input:focus{
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(58,141,255,0.12);
+  }
+
+  .btn-primary{
+    width:100%;
+    background: var(--blue);
+    color: #000;
+    border:none;
+    padding: 13px;
+    font-weight: 800;
+    font-size: 12.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor:pointer;
+    transition: background .15s, box-shadow .15s, transform .1s;
+    font-family: inherit;
+    margin-top: 6px;
+  }
+  .btn-primary:hover{ background: var(--blue-bright); box-shadow: 0 0 22px rgba(58,141,255,0.4); }
+  .btn-primary:active{ transform: scale(0.98); }
+
+  .auth-error{
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--red);
+    text-align:center;
+    display:none;
+  }
+  .auth-error.show{ display:block; }
+
+  .auth-foot{
+    margin-top: 18px;
+    text-align:center;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  /* ===== Dashboard ===== */
+  header.bar{
+    border-bottom: 1px solid var(--line);
+    padding: 18px 5vw;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top:0;
+    z-index: 10;
+  }
+  .bar-left{ display:flex; align-items:center; gap:12px; }
+  .bar-mark{
+    width: 34px; height:34px;
+    border:1.5px solid var(--blue);
+    display:flex; align-items:center; justify-content:center;
+    transform: rotate(45deg);
+    font-family:'Orbitron', sans-serif; font-weight:800; color:var(--blue-bright); font-size:15px;
+  }
+  .bar-mark span{ transform: rotate(-45deg); }
+  .bar-title{ font-family:'Orbitron', sans-serif; font-size:14px; letter-spacing:1.5px; color:var(--text); }
+  .bar-right{ display:flex; align-items:center; gap: 18px; }
+  .user-chip{
+    display:flex; align-items:center; gap:8px;
+    font-size: 12px; color: var(--text-dim);
+    font-family:'JetBrains Mono', monospace;
+  }
+  .user-dot{ width:7px; height:7px; border-radius:50%; background: var(--blue); box-shadow: 0 0 8px var(--blue); }
+  .btn-logout{
+    background:none;
+    border:1px solid var(--line);
+    color: var(--text-dim);
+    padding: 8px 14px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor:pointer;
+    font-family: inherit;
+    transition: border-color .2s, color .2s;
+  }
+  .btn-logout:hover{ border-color: var(--blue); color: var(--blue-bright); }
+
+  .dash{ padding: 36px 5vw 90px; }
+
+  .stat-row{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .stat{
+    border: 1px solid var(--line);
+    background: var(--panel);
+    padding: 18px 20px;
+    position: relative;
+    overflow:hidden;
+  }
+  .stat::after{
+    content:'';
+    position:absolute; left:0; bottom:0; height:2px; width:100%;
+    background: linear-gradient(90deg, var(--blue), transparent);
+    opacity:.6;
+  }
+  .stat-label{ font-size: 10.5px; letter-spacing:1.5px; text-transform:uppercase; color: var(--text-dim); margin-bottom: 8px; }
+  .stat-value{ font-family:'JetBrains Mono', monospace; font-size: 24px; font-weight:600; color: var(--blue-bright); }
+  .stat-sub{ font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+  .panel-block{
+    border: 1px solid var(--line);
+    background: var(--panel);
+    padding: 26px;
+    margin-bottom: 24px;
+  }
+  .panel-block h3{
+    font-family:'Orbitron', sans-serif;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: var(--text);
+    margin-bottom: 18px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .panel-block h3::before{ content:''; width:3px; height:14px; background: var(--blue); display:inline-block; }
+
+  .quick-actions{ display:flex; flex-wrap:wrap; gap: 12px; }
+  .qa-btn{
+    flex: 1 1 160px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 16px;
+    cursor:pointer;
+    text-align:left;
+    font-family: inherit;
+    transition: border-color .2s, background .2s;
+  }
+  .qa-btn:hover{ border-color: var(--blue); background: #0d1422; }
+  .qa-btn .qa-icon{ color: var(--blue-bright); font-size: 17px; margin-bottom: 8px; display:block; }
+  .qa-btn .qa-label{ font-size: 12.5px; font-weight:700; }
+  .qa-btn .qa-desc{ font-size: 10.5px; color: var(--text-dim); margin-top: 3px; }
+
+  .activity-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12.5px;
+  }
+  .activity-row:last-child{ border-bottom:none; }
+  .activity-left{ display:flex; align-items:center; gap: 10px; color: var(--text); }
+  .activity-left .act-dot{ width:6px; height:6px; border-radius:50%; background: var(--blue); }
+  .activity-time{ color: var(--text-dim); font-family:'JetBrains Mono', monospace; font-size: 11px; }
+
+  .empty-mini{ color: var(--text-dim); font-size: 12.5px; padding: 18px 0; text-align:center; }
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="app">
+
+  <!-- AUTH SCREEN -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <div class="auth-welcome">Selamat datang di website</div>
+        <h1>HEYYARYA TRADER GOLD</h1>
+        <p>Secure Access</p>
       </div>
-      <span className="font-bold text-lg text-white tracking-tight" style={{ fontFamily: "Sora, sans-serif" }}>
-        Volt<span className="text-[#B98CFF]">API</span>
-      </span>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin">Login</button>
+        <button class="auth-tab" id="tabRegister">Register</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="loginForm">
+        <div class="field">
+          <label>Username</label>
+          <input type="text" id="loginUser" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="loginPass" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn-primary">Masuk</button>
+        <div class="auth-error" id="loginError"></div>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="registerForm" class="hidden">
+        <div class="field">
+          <label>Username</label>
+          <input type="text" id="regUser" required>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="regPass" required>
+        </div>
+        <div class="field">
+          <label>Konfirmasi Password</label>
+          <input type="password" id="regPass2" required>
+        </div>
+        <button type="submit" class="btn-primary">Daftar Akun</button>
+        <div class="auth-error" id="registerError"></div>
+      </form>
+
+      <div class="auth-foot" id="authFoot">Belum punya akun? Klik tab Register.</div>
     </div>
-  );
-}
+  </div>
 
-function RegisterScreen({ goLogin, goDashboard }) {
-  const [showPw, setShowPw] = useState(false);
-  return (
-    <AuthShell>
-      <Logo />
-      <div className="bg-[#120C1E]/80 backdrop-blur border border-white/[0.06] rounded-2xl p-8">
-        <h1 className="text-2xl font-bold text-white mb-1" style={{ fontFamily: "Sora, sans-serif" }}>Daftar untuk memulai</h1>
-        <p className="text-sm text-[#9D94B5] mb-6">Buat akun untuk mendapatkan API key gratis kamu.</p>
-
-        <div className="flex flex-col gap-3 mb-5">
-          <LightningButton variant="outline" icon={Github}>Continue with GitHub</LightningButton>
-          <LightningButton variant="outline" onClick={() => {}} className="!pl-0">
-            <span className="flex items-center justify-center gap-2 w-full"><GoogleIcon /> Continue with Google</span>
-          </LightningButton>
-        </div>
-
-        <div className="flex items-center gap-3 mb-5">
-          <div className="flex-1 h-px bg-white/10" />
-          <span className="text-xs text-[#5A5270]">atau dengan email</span>
-          <div className="flex-1 h-px bg-white/10" />
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <FieldLabel>Email</FieldLabel>
-            <TextField icon={Mail} type="email" placeholder="kamu@email.com" />
-          </div>
-          <div>
-            <FieldLabel>Password</FieldLabel>
-            <TextField
-              icon={Lock}
-              type={showPw ? "text" : "password"}
-              placeholder="Minimal 8 karakter"
-              suffix={
-                <button onClick={() => setShowPw(!showPw)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6B6280] hover:text-[#B98CFF]">
-                  {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              }
-            />
-          </div>
-          <div>
-            <FieldLabel>Kode Referral <span className="text-[#5A5270]">(opsional)</span></FieldLabel>
-            <TextField icon={Gift} placeholder="VOLT-XXXXX" />
-          </div>
-
-          <LightningButton onClick={goDashboard} icon={ArrowRight} className="mt-2">Buat Akun</LightningButton>
-        </div>
-
-        <p className="text-center text-sm text-[#9D94B5] mt-6">
-          Sudah punya akun?{" "}
-          <button onClick={goLogin} className="text-[#B98CFF] font-medium hover:underline">Masuk di sini</button>
-        </p>
+  <!-- DASHBOARD -->
+  <div id="dashScreen" class="hidden">
+    <header class="bar">
+      <div class="bar-left">
+        <div class="bar-mark"><span>H</span></div>
+        <div class="bar-title">HEYYARYA TRADER GOLD</div>
       </div>
-      <p className="text-center text-xs text-[#5A5270] mt-6">
-        Dengan mendaftar, kamu menyetujui <span className="text-[#9D94B5]">Syarat Layanan</span> & <span className="text-[#9D94B5]">Kebijakan Privasi</span>.
-      </p>
-    </AuthShell>
-  );
-}
-
-function LoginScreen({ goRegister, goDashboard }) {
-  const [showPw, setShowPw] = useState(false);
-  return (
-    <AuthShell>
-      <Logo />
-      <div className="bg-[#120C1E]/80 backdrop-blur border border-white/[0.06] rounded-2xl p-8">
-        <h1 className="text-2xl font-bold text-white mb-1" style={{ fontFamily: "Sora, sans-serif" }}>Selamat datang kembali</h1>
-        <p className="text-sm text-[#9D94B5] mb-6">Masuk untuk mengakses dashboard API kamu.</p>
-
-        <div className="flex flex-col gap-3 mb-5">
-          <LightningButton variant="outline" icon={Github}>Continue with GitHub</LightningButton>
-          <LightningButton variant="outline">
-            <span className="flex items-center justify-center gap-2 w-full"><GoogleIcon /> Continue with Google</span>
-          </LightningButton>
-        </div>
-
-        <div className="flex items-center gap-3 mb-5">
-          <div className="flex-1 h-px bg-white/10" />
-          <span className="text-xs text-[#5A5270]">atau dengan email</span>
-          <div className="flex-1 h-px bg-white/10" />
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <FieldLabel>Email</FieldLabel>
-            <TextField icon={Mail} type="email" placeholder="kamu@email.com" />
-          </div>
-          <div>
-            <FieldLabel>Password</FieldLabel>
-            <TextField
-              icon={Lock}
-              type={showPw ? "text" : "password"}
-              placeholder="Password kamu"
-              suffix={
-                <button onClick={() => setShowPw(!showPw)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6B6280] hover:text-[#B98CFF]">
-                  {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              }
-            />
-          </div>
-          <div className="flex justify-end">
-            <button className="text-xs text-[#B98CFF] hover:underline">Lupa password?</button>
-          </div>
-          <LightningButton onClick={goDashboard} icon={ArrowRight}>Masuk</LightningButton>
-        </div>
-
-        <p className="text-center text-sm text-[#9D94B5] mt-6">
-          Belum punya akun?{" "}
-          <button onClick={goRegister} className="text-[#B98CFF] font-medium hover:underline">Daftar sekarang</button>
-        </p>
+      <div class="bar-right">
+        <div class="user-chip"><span class="user-dot"></span><span id="userChipName">user</span></div>
+        <button class="btn-logout" id="logoutBtn">Logout</button>
       </div>
-    </AuthShell>
-  );
-}
+    </header>
 
-/* -------------------------------- DASHBOARD ------------------------------ */
-
-function StatusDot({ live }) {
-  return (
-    <span className="relative flex items-center">
-      <span className={`w-2 h-2 rounded-full ${live ? "bg-[#3DDC97]" : "bg-[#FF5C7A]"}`} />
-      {live && <span className="absolute w-2 h-2 rounded-full bg-[#3DDC97] animate-ping" />}
-    </span>
-  );
-}
-
-function StatCard({ icon: Icon, label, value, sub }) {
-  return (
-    <div className="bg-[#120C1E] border border-white/[0.06] rounded-2xl p-5">
-      <div className="flex items-center justify-between mb-3">
-        <div className="w-9 h-9 rounded-lg bg-[#B98CFF]/10 flex items-center justify-center">
-          <Icon size={17} className="text-[#B98CFF]" />
+    <div class="dash">
+      <div class="stat-row">
+        <div class="stat">
+          <div class="stat-label">Status Akun</div>
+          <div class="stat-value">Aktif</div>
+          <div class="stat-sub">Sesi tersimpan di perangkat ini</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Login Terakhir</div>
+          <div class="stat-value" id="lastLogin">—</div>
+          <div class="stat-sub">Waktu lokal</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Total Unggahan</div>
+          <div class="stat-value">0</div>
+          <div class="stat-sub">Item di galeri</div>
         </div>
       </div>
-      <div className="text-2xl font-bold text-white" style={{ fontFamily: "Sora, sans-serif" }}>{value}</div>
-      <div className="text-xs text-[#9D94B5] mt-1">{label}</div>
-      {sub && <div className="text-[11px] text-[#3DDC97] mt-1">{sub}</div>}
+
+      <div class="panel-block">
+        <h3>Aksi Cepat</h3>
+        <div class="quick-actions">
+          <button class="qa-btn">
+            <span class="qa-icon">&#9650;</span>
+            <span class="qa-label">Unggah Gambar</span>
+            <span class="qa-desc">Tambah bukti / catatan baru</span>
+          </button>
+          <button class="qa-btn">
+            <span class="qa-icon">&#9670;</span>
+            <span class="qa-label">Galeri Saya</span>
+            <span class="qa-desc">Lihat semua unggahan</span>
+          </button>
+          <button class="qa-btn">
+            <span class="qa-icon">&#9881;</span>
+            <span class="qa-label">Pengaturan</span>
+            <span class="qa-desc">Ubah profil &amp; password</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-block">
+        <h3>Aktivitas</h3>
+        <div id="activityList">
+          <div class="activity-row">
+            <div class="activity-left"><span class="act-dot"></span> Akun berhasil masuk</div>
+            <div class="activity-time" id="actTime">—</div>
+          </div>
+        </div>
+      </div>
     </div>
-  );
-}
+  </div>
 
-const ENDPOINTS = [
-  { method: "GET", path: "/v1/status", desc: "Cek status server realtime", code: 200, ms: 42 },
-  { method: "POST", path: "/v1/orders", desc: "Buat order baru", code: 201, ms: 118 },
-  { method: "GET", path: "/v1/orders/:id", desc: "Cek status order", code: 200, ms: 64 },
-  { method: "POST", path: "/v1/deposits", desc: "Buat permintaan deposit", code: 201, ms: 95 },
-  { method: "GET", path: "/v1/products", desc: "Daftar produk tersedia", code: 200, ms: 51 },
-];
+</div>
 
-const LOGS = [
-  { t: "09:42:11", ep: "POST /v1/orders", code: 201, ip: "103.21.x.x", ms: 112 },
-  { t: "09:41:55", ep: "GET /v1/products", code: 200, ip: "182.4.x.x", ms: 48 },
-  { t: "09:41:30", ep: "GET /v1/orders/TRX1872", code: 200, ms: 60, ip: "103.21.x.x" },
-  { t: "09:40:58", ep: "POST /v1/deposits", code: 429, ip: "44.5.x.x", ms: 5 },
-];
+<script>
+  /* ===== Lightning background animation ===== */
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  let w, h;
+  function resize(){ w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
 
-function Dashboard({ logout }) {
-  const [copied, setCopied] = useState(false);
-  const [apiKey, setApiKey] = useState("volt_live_8f2k9s7d6h3j1q0w5e4r3t2y1u");
-  const [revealed, setRevealed] = useState(false);
+  let bolts = [];
 
-  const copy = () => {
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
-  const regenerate = () => {
-    setApiKey("volt_live_" + Math.random().toString(36).slice(2, 28));
-  };
-  const masked = "volt_live_" + "•".repeat(26);
+  function createBolt(){
+    const startX = Math.random() * w;
+    const segments = [];
+    let x = startX, y = -20;
+    const segCount = 14 + Math.floor(Math.random()*8);
+    for(let i=0;i<segCount;i++){
+      segments.push({x, y});
+      x += (Math.random()-0.5) * 70;
+      y += h/segCount;
+    }
+    segments.push({x, y: h+20});
 
-  return (
-    <div className="min-h-screen bg-[#0A0710] text-[#E9E4F5]" style={{ fontFamily: "Inter, sans-serif" }}>
-      {/* Topbar */}
-      <header className="sticky top-0 z-10 bg-[#0A0710]/90 backdrop-blur border-b border-white/[0.06] flex items-center justify-between px-6 h-16">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[#B98CFF] flex items-center justify-center shadow-[0_0_16px_-2px_#B98CFF]">
-            <Zap size={15} className="text-black" fill="black" />
-          </div>
-          <span className="font-bold text-white" style={{ fontFamily: "Sora, sans-serif" }}>Volt<span className="text-[#B98CFF]">API</span></span>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 bg-[#120C1E] border border-white/[0.06] rounded-full px-3 py-1.5">
-            <StatusDot live />
-            <span className="text-xs text-[#9D94B5]">Server Realtime: <span className="text-[#3DDC97] font-medium">Online</span></span>
-          </div>
-          <button className="text-[#9D94B5] hover:text-white"><Bell size={18} /></button>
-          <button className="text-[#9D94B5] hover:text-white"><Settings size={18} /></button>
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#B98CFF] to-[#7C3AED] flex items-center justify-center text-xs font-bold text-black">A</div>
-          <button onClick={logout} className="text-[#9D94B5] hover:text-[#FF5C7A]"><LogOut size={17} /></button>
-        </div>
-      </header>
+    // branches
+    const branches = [];
+    if(Math.random() < 0.7){
+      const idx = Math.floor(segCount*0.3) + Math.floor(Math.random()*segCount*0.3);
+      const origin = segments[idx];
+      if(origin){
+        let bx = origin.x, by = origin.y;
+        const bseg = [{x:bx, y:by}];
+        const bcount = 5 + Math.floor(Math.random()*4);
+        for(let j=0;j<bcount;j++){
+          bx += (Math.random()-0.3) * 50;
+          by += 30 + Math.random()*20;
+          bseg.push({x:bx, y:by});
+        }
+        branches.push(bseg);
+      }
+    }
 
-      <main className="p-6 max-w-6xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-white" style={{ fontFamily: "Sora, sans-serif" }}>Dashboard</h1>
-          <p className="text-sm text-[#9D94B5] mt-1">Kelola API key, pantau penggunaan, dan cek status server secara realtime.</p>
-        </div>
+    bolts.push({
+      segments, branches,
+      life: 1,
+      decay: 0.04 + Math.random()*0.03,
+      width: 1.2 + Math.random()*1.3
+    });
+  }
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <StatCard icon={Activity} label="Request Hari Ini" value="4,218" sub="+12% dari kemarin" />
-          <StatCard icon={Server} label="Uptime Server" value="99.98%" sub="30 hari terakhir" />
-          <StatCard icon={Clock} label="Rata-rata Latensi" value="64ms" />
-          <StatCard icon={ShieldCheck} label="Rate Limit" value="1,000/menit" />
-        </div>
+  function drawBoltPath(pts, alpha, width, color){
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = alpha;
+    ctx.lineWidth = width;
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = color;
+    ctx.stroke();
+  }
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-          {/* API Key Card */}
-          <div className="lg:col-span-2 bg-[#120C1E] border border-white/[0.06] rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Key size={16} className="text-[#B98CFF]" />
-                <h3 className="text-sm font-semibold text-white">API Key Kamu</h3>
-              </div>
-              <button onClick={regenerate} className="flex items-center gap-1.5 text-xs text-[#B98CFF] hover:text-[#C9A6FF]">
-                <RefreshCw size={13} /> Generate Ulang
-              </button>
-            </div>
-            <div className="flex items-center gap-2 bg-[#0E0816] border border-white/10 rounded-xl px-4 py-3 mb-4">
-              <code className="flex-1 text-sm text-[#C9A6FF] font-mono truncate">{revealed ? apiKey : masked}</code>
-              <button onClick={() => setRevealed(!revealed)} className="text-[#6B6280] hover:text-white">
-                {revealed ? <EyeOff size={15} /> : <Eye size={15} />}
-              </button>
-              <button onClick={copy} className="text-[#6B6280] hover:text-white">
-                {copied ? <Check size={15} className="text-[#3DDC97]" /> : <Copy size={15} />}
-              </button>
-            </div>
-            <div className="flex items-center gap-2 mb-1">
-              <Globe size={14} className="text-[#6B6280]" />
-              <span className="text-xs text-[#9D94B5]">Base URL</span>
-            </div>
-            <div className="flex items-center gap-2 bg-[#0E0816] border border-white/10 rounded-xl px-4 py-3">
-              <code className="flex-1 text-sm text-[#E9E4F5] font-mono">https://api.voltapi.dev</code>
-              <button className="text-[#6B6280] hover:text-white"><Copy size={15} /></button>
-            </div>
-            <div className="flex items-center gap-2 mt-4 text-xs text-[#9D94B5]">
-              <AlertCircle size={13} className="text-[#FFB020]" />
-              Jangan bagikan API key ini di kode publik atau frontend.
-            </div>
-          </div>
+  function animate(){
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.fillRect(0,0,w,h);
 
-          {/* Realtime status */}
-          <div className="bg-[#120C1E] border border-white/[0.06] rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Wifi size={16} className="text-[#3DDC97]" />
-              <h3 className="text-sm font-semibold text-white">Status Server</h3>
-            </div>
-            <div className="space-y-3">
-              {[
-                { n: "API Gateway", s: true },
-                { n: "WebSocket Realtime", s: true },
-                { n: "Provider Digiflazz", s: true },
-                { n: "Cek Mutasi OVO/Gopay", s: false },
-              ].map((s) => (
-                <div key={s.n} className="flex items-center justify-between">
-                  <span className="text-sm text-[#C9C3D9]">{s.n}</span>
-                  <span className={`flex items-center gap-1.5 text-xs ${s.s ? "text-[#3DDC97]" : "text-[#FF5C7A]"}`}>
-                    <StatusDot live={s.s} /> {s.s ? "normal" : "gangguan"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+    if(Math.random() < 0.018 && bolts.length < 3) createBolt();
 
-        {/* Endpoints */}
-        <div className="bg-[#120C1E] border border-white/[0.06] rounded-2xl p-6 mb-6">
-          <div className="flex items-center gap-2 mb-4">
-            <BarChart3 size={16} className="text-[#B98CFF]" />
-            <h3 className="text-sm font-semibold text-white">Endpoint Tersedia</h3>
-          </div>
-          <div className="space-y-2">
-            {ENDPOINTS.map((e) => (
-              <div key={e.path} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.02]">
-                <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold w-14 text-center ${
-                  e.method === "GET" ? "bg-[#3DDC97]/10 text-[#3DDC97]" : "bg-[#B98CFF]/10 text-[#B98CFF]"
-                }`}>{e.method}</span>
-                <code className="text-sm text-[#E9E4F5] font-mono flex-1">{e.path}</code>
-                <span className="text-xs text-[#6B6280] hidden sm:block">{e.desc}</span>
-                <span className="text-xs text-[#3DDC97] font-mono">{e.code}</span>
-                <span className="text-xs text-[#6B6280] font-mono w-12 text-right">{e.ms}ms</span>
-              </div>
-            ))}
-          </div>
-        </div>
+    bolts.forEach(b => {
+      b.life -= b.decay;
+      const a = Math.max(b.life, 0);
+      drawBoltPath(b.segments, a*0.9, b.width, '#6fb8ff');
+      drawBoltPath(b.segments, a*0.4, b.width*3, '#3a8dff');
+      b.branches.forEach(br => {
+        drawBoltPath(br, a*0.6, b.width*0.7, '#6fb8ff');
+      });
+    });
+    bolts = bolts.filter(b => b.life > 0);
 
-        {/* Logs */}
-        <div className="bg-[#120C1E] border border-white/[0.06] rounded-2xl p-6">
-          <h3 className="text-sm font-semibold text-white mb-4">Log Request Terbaru</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs text-[#6B6280] uppercase">
-                  <th className="pb-2 font-medium">Waktu</th>
-                  <th className="pb-2 font-medium">Endpoint</th>
-                  <th className="pb-2 font-medium">IP</th>
-                  <th className="pb-2 font-medium">Status</th>
-                  <th className="pb-2 font-medium text-right">Latensi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {LOGS.map((l, i) => (
-                  <tr key={i}>
-                    <td className="py-2.5 text-[#9D94B5] font-mono text-xs">{l.t}</td>
-                    <td className="py-2.5 font-mono text-[#E9E4F5]">{l.ep}</td>
-                    <td className="py-2.5 text-[#6B6280] font-mono text-xs">{l.ip}</td>
-                    <td className={`py-2.5 font-mono text-xs ${l.code < 300 ? "text-[#3DDC97]" : "text-[#FF5C7A]"}`}>{l.code}</td>
-                    <td className="py-2.5 text-right text-[#6B6280] font-mono text-xs">{l.ms}ms</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
-}
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+    requestAnimationFrame(animate);
+  }
+  animate();
 
-/* ---------------------------------- ROOT --------------------------------- */
+  /* ===== Auth logic (persisted via window.storage) ===== */
+  const tabLogin = document.getElementById('tabLogin');
+  const tabRegister = document.getElementById('tabRegister');
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const authFoot = document.getElementById('authFoot');
+  const loginError = document.getElementById('loginError');
+  const registerError = document.getElementById('registerError');
+  const authScreen = document.getElementById('authScreen');
+  const dashScreen = document.getElementById('dashScreen');
 
-export default function App() {
-  const [screen, setScreen] = useState("register"); // register | login | dashboard
+  tabLogin.addEventListener('click', () => {
+    tabLogin.classList.add('active'); tabRegister.classList.remove('active');
+    loginForm.classList.remove('hidden'); registerForm.classList.add('hidden');
+    authFoot.textContent = 'Belum punya akun? Klik tab Register.';
+    loginError.classList.remove('show'); registerError.classList.remove('show');
+  });
+  tabRegister.addEventListener('click', () => {
+    tabRegister.classList.add('active'); tabLogin.classList.remove('active');
+    registerForm.classList.remove('hidden'); loginForm.classList.add('hidden');
+    authFoot.textContent = 'Sudah punya akun? Klik tab Login.';
+    loginError.classList.remove('show'); registerError.classList.remove('show');
+  });
 
-  if (screen === "dashboard") return <Dashboard logout={() => setScreen("login")} />;
-  if (screen === "login") return <LoginScreen goRegister={() => setScreen("register")} goDashboard={() => setScreen("dashboard")} />;
-  return <RegisterScreen goLogin={() => setScreen("login")} goDashboard={() => setScreen("dashboard")} />;
-}
+  function simpleHash(str){
+    let h = 0;
+    for(let i=0;i<str.length;i++){ h = (h*31 + str.charCodeAt(i)) >>> 0; }
+    return h.toString(16);
+  }
+
+  async function getUser(username){
+    try{
+      const res = await window.storage.get('user:' + username, true);
+      return res ? JSON.parse(res.value) : null;
+    }catch(e){ return null; }
+  }
+  async function saveUser(username, data){
+    await window.storage.set('user:' + username, JSON.stringify(data), true);
+  }
+
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    registerError.classList.remove('show');
+    const u = document.getElementById('regUser').value.trim();
+    const p = document.getElementById('regPass').value;
+    const p2 = document.getElementById('regPass2').value;
+
+    if(u.length < 3){ showErr(registerError, 'Username minimal 3 karakter.'); return; }
+    if(p.length < 4){ showErr(registerError, 'Password minimal 4 karakter.'); return; }
+    if(p !== p2){ showErr(registerError, 'Konfirmasi password tidak cocok.'); return; }
+
+    const existing = await getUser(u);
+    if(existing){ showErr(registerError, 'Username sudah dipakai.'); return; }
+
+    await saveUser(u, { passHash: simpleHash(p), createdAt: Date.now() });
+    showErr(registerError, 'Akun dibuat. Silakan login.', true);
+    registerForm.reset();
+    setTimeout(() => tabLogin.click(), 900);
+  });
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    loginError.classList.remove('show');
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value;
+
+    const user = await getUser(u);
+    if(!user || user.passHash !== simpleHash(p)){
+      showErr(loginError, 'Username atau password salah.');
+      return;
+    }
+    enterDashboard(u);
+  });
+
+  function showErr(el, msg, ok){
+    el.textContent = msg;
+    el.style.color = ok ? '#5fd6a0' : 'var(--red)';
+    el.classList.add('show');
+  }
+
+  function enterDashboard(username){
+    authScreen.classList.add('hidden');
+    dashScreen.classList.remove('hidden');
+    document.getElementById('userChipName').textContent = username;
+    const now = new Date().toLocaleString('id-ID');
+    document.getElementById('lastLogin').textContent = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+    document.getElementById('actTime').textContent = now;
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    dashScreen.classList.add('hidden');
+    authScreen.classList.remove('hidden');
+    loginForm.reset();
+  });
+</script>
+
+</body>
+</html>
