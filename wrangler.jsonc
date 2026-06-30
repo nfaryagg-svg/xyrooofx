@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "crimson-thunder-14a5",
+  "name": "proud-credit-a02d",
   "compatibility_date": "2026-06-30",
   "observability": {
     "enabled": true
